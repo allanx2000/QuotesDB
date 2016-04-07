@@ -11,9 +11,9 @@ namespace QuotesDB
     {
         private MainWindow window;
 
-        private DataStore dataStore;
+        private IQuoteStore dataStore;
 
-        private string databasePath;
+        private string databasePath = Properties.Settings.Default.LastPath;
         public string DatabasePath
         {
             get { return databasePath; }
@@ -24,9 +24,37 @@ namespace QuotesDB
             }
         }
 
+        public bool Loaded
+        {
+            get
+            {
+                return dataStore != null;
+            }
+        }
+
+        public bool NotLoaded
+        {
+            get
+            {
+                return !Loaded;
+            }
+        }
+
         public ICommand LoadCommand
         {
             get { return new CommandHelper(LoadDatabase); }
+        }
+
+        public ICommand OpenQuotesManagerCommand
+        {
+            get
+            {
+                return new CommandHelper(() =>
+                {
+                    Manager manager = new Manager(dataStore);
+                    manager.Show();
+                });
+            }
         }
 
         private void LoadDatabase()
@@ -39,6 +67,13 @@ namespace QuotesDB
                 var exists = File.Exists(databasePath);
 
                 dataStore = new DataStore(databasePath, !exists);
+
+                //Store
+                Properties.Settings.Default.LastPath = databasePath;
+                Properties.Settings.Default.Save();
+
+                RaisePropertyChanged("Loaded");
+                RaisePropertyChanged("NotLoaded");
             }
             catch (Exception e)
             {
@@ -49,6 +84,7 @@ namespace QuotesDB
         public MainWindowViewModel(MainWindow window)
         {
             this.window = window;
+            
         }
     }
 }

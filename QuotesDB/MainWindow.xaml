@@ -23,9 +23,9 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Column="0">Database:</Label>
-            <TextBox Grid.Column="1" Text="{Binding DatabasePath}"/>
-            <Button Grid.Column="2">...</Button>
-            <Button Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
+            <TextBox IsEnabled="{Binding NotLoaded}" Grid.Column="1" Text="{Binding DatabasePath}"/>
+            <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="2">...</Button>
+            <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
         </Grid>
         
         <GroupBox Grid.Row="2">
@@ -33,7 +33,7 @@
         </GroupBox>
 
         <StackPanel Grid.Row="3">
-            <Button>Quotes Manager</Button>
+            <Button Command="{Binding OpenQuotesManagerCommand}">Quotes Manager</Button>
         </StackPanel>
     </Grid>
 </Window>
