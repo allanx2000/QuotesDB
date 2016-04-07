@@ -1,0 +1,39 @@
+﻿<Window x:Class="QuotesDB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuotesDB"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0">Database:</Label>
+            <TextBox Grid.Column="1" Text="{Binding DatabasePath}"/>
+            <Button Grid.Column="2">...</Button>
+            <Button Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
+        </Grid>
+        
+        <GroupBox Grid.Row="2">
+            <Label>Random Quote</Label>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3">
+            <Button>Quotes Manager</Button>
+        </StackPanel>
+    </Grid>
+</Window>
