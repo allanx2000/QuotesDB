@@ -1,5 +1,8 @@
-﻿namespace QuotesDB.DAO
+﻿using System;
+
+namespace QuotesDB.DAO
 {
+    [Serializable]
     public class Tag
     {
         public int ID { get; set; }

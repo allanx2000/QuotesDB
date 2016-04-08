@@ -28,12 +28,14 @@
             <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
         </Grid>
         
-        <GroupBox Grid.Row="2">
+        <GroupBox Grid.Row="2" IsEnabled="{Binding Loaded}">
             <Label>Random Quote</Label>
         </GroupBox>
 
-        <StackPanel Grid.Row="3">
+        <StackPanel Grid.Row="3" IsEnabled="{Binding Loaded}">
             <Button Command="{Binding OpenQuotesManagerCommand}">Quotes Manager</Button>
+            <Button Command="{Binding ExportImportCommand}">Export/Import</Button>
+
         </StackPanel>
     </Grid>
 </Window>

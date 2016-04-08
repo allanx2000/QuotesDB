@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QuotesDB.Exporter;
 
 namespace QuotesDB.DAO
 {
@@ -102,7 +103,30 @@ namespace QuotesDB.DAO
 
         public List<Quote> GetQuotes(Author author)
         {
-            throw new NotImplementedException();
+            string sql = "SELECT * FROM " + QuotesTable + " WHERE AuthorId=" + author.ID;
+
+            return ParseQuotes(ExecuteSelect(sql));
+        }
+
+        private List<Quote> ParseQuotes(DataTable data)
+        {
+            List<Quote> quotes = new List<Quote>();
+
+            foreach (DataRow row in data.Rows)
+            {
+                var q = new Quote()
+                {
+                    ID = Convert.ToInt32(row["ID"]),
+                    AuthorId = Convert.ToInt32(row["AuthorID"]),
+                    Displayed = Convert.ToInt32(row["Count"]),
+                    Rating = Convert.ToInt32(row["Rating"]), 
+                    Text = row["Text"].ToString()
+                };
+
+                quotes.Add(q);
+            }
+
+            return quotes;
         }
 
         public List<Author> GetAuthors(string search = null)
@@ -132,9 +156,10 @@ namespace QuotesDB.DAO
         public int InsertQuote(Quote quote)
         {
             string sql = "INSERT INTO {0} VALUES(NULL,{1},'{2}',{3},{4})";
-            sql = String.Format(sql, QuotesTable, quote.AuthorId, quote.Text, quote.Displayed, quote.Rating);
+            sql = String.Format(sql, QuotesTable, quote.AuthorId, 
+                 SQLUtils.SQLEncode(quote.Text), quote.Displayed, quote.Rating);
             ExecuteNonQuery(sql);
-
+            
             return SQLUtils.GetLastInsertRow(this);
         }
 
@@ -247,6 +272,35 @@ namespace QuotesDB.DAO
             var data = this.ExecuteSelect(sql);
 
             return ParseTags(data).FirstOrDefault();
+        }
+
+        public Bundle Export()
+        {
+            Bundle bundle = new Bundle();
+            bundle.Quotes = GetQuotes();
+            bundle.Authors = GetAuthors();
+            bundle.Tags = GetTags();
+
+            foreach (Quote q in bundle.Quotes)
+            {
+                var tags = GetTagsForQuote(q);
+                q.Tags = tags;
+            }
+
+            return bundle;
+        }
+
+        private List<Quote> GetQuotes()
+        {
+            string sql = "SELECT * FROM " + QuotesTable;
+            List<Quote> quotes = ParseQuotes(ExecuteSelect(sql));
+
+            return quotes;
+        }
+
+        public void Import(Bundle data)
+        {
+            throw new NotImplementedException();
         }
 
         public DataStore(string filename, bool isNew) : base(filename, isNew)

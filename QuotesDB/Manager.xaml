@@ -9,7 +9,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
@@ -22,9 +22,20 @@
             <Label>List:</Label>
             <ComboBox ItemsSource="{Binding ListBy}" Width="100" SelectedItem="{Binding SelectedList}" />
         </StackPanel>
+        <ListBox Grid.Row="1" Grid.Column="0" 
+                 ItemsSource="{Binding ListItems}" 
+                 DisplayMemberPath="{Binding ListPath}"
+                 SelectedItem="{Binding SelectedItem}"/>
 
-        <Button Grid.Row="1" Grid.Column="1" Command="{Binding AddQuoteCommand}">New Quote</Button>
+        <DataGrid Grid.Row="1" Grid.Column="1" AutoGenerateColumns="True" ItemsSource="{Binding QuotesList}">
+        </DataGrid>
 
-        <ListBox Grid.Row="1" Grid.Column="0" ItemsSource="{Binding ListItems}" DisplayMemberPath="{Binding ListPath}"/>
+
+        <StackPanel Grid.Row="1" Grid.Column="2" >
+            <Button Command="{Binding AddQuoteCommand}">New</Button>
+            <Button>Edit</Button>
+        </StackPanel>
+        
+
     </Grid>
 </Window>

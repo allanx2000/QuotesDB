@@ -1,5 +1,7 @@
-﻿using Innouvous.Utils.MVVM;
+﻿using Innouvous.Utils;
+using Innouvous.Utils.MVVM;
 using QuotesDB.DAO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -50,35 +52,42 @@ namespace QuotesDB
 
         public void Save()
         {
-            bool isUpdate = quote != null;
-            Quote qt = isUpdate? quote : new DAO.Quote();
-            qt.Text = Quote;
-
-            var author = ds.GetAuthors(Author).FirstOrDefault();
-            if (author == null)
+            try
             {
-                qt.AuthorId = ds.CreateAuthor(new Author() { Name = Author });
+                bool isUpdate = quote != null;
+                Quote qt = isUpdate ? quote : new DAO.Quote();
+                qt.Text = Quote;
+
+                var author = ds.GetAuthors(Author).FirstOrDefault();
+                if (author == null)
+                {
+                    qt.AuthorId = ds.CreateAuthor(new Author() { Name = Author });
+                }
+                else
+                    qt.AuthorId = author.ID;
+
+                qt.Text = Quote;
+                qt.Rating = Rating;
+
+                if (!isUpdate)
+                {
+                    int id = ds.InsertQuote(qt);
+                    qt.ID = id;
+                }
+
+                //Tags
+                if (!string.IsNullOrEmpty(Tags))
+                {
+                    var tags = from i in Tags.Split(',') select i.Trim();
+                    ds.UpdateTags(qt, tags);
+                }
+
+                window.Close();
             }
-            else
-                qt.AuthorId = author.ID;
-
-            qt.Text = Quote;
-            qt.Rating = Rating;
-
-            if (!isUpdate)
+            catch (Exception e)
             {
-                int id = ds.InsertQuote(qt);
-                qt.ID = id;
+                MessageBoxFactory.ShowError(e);
             }
-
-            //Tags
-            if (!string.IsNullOrEmpty(Tags))
-            {
-                var tags = from i in Tags.Split(',') select i.Trim();
-                ds.UpdateTags(qt, tags);
-            }
-
-            window.Close();
         }
 
 

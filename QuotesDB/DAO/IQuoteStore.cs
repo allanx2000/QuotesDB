@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using QuotesDB.Exporter;
+using System.Collections.Generic;
 
 namespace QuotesDB.DAO
 {
@@ -21,6 +22,9 @@ namespace QuotesDB.DAO
         List<Tag> GetTags(string search = null);
         List<Tag> GetTagsForQuote(Quote quote);
         void UpdateTags(Quote qt, IEnumerable<string> tags);
+
+        Bundle Export();
+        void Import(Bundle data);
     }
 
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace QuotesDB.DAO
 {
+    [Serializable]
     public class Quote
     {
         public int ID { get; set; }
@@ -13,6 +14,8 @@ namespace QuotesDB.DAO
         public int AuthorId { get; set; }
         public int Displayed { get; set; }
         public int Rating { get; set; }
-        
+
+
+        public List<Tag> Tags { get; set; }
     }
 }

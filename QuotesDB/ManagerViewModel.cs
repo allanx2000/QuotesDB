@@ -21,6 +21,7 @@ namespace QuotesDB
         {
             this.dataStore = ds;
             ListItems = new ObservableCollection<object>();
+            QuotesList = new ObservableCollection<Quote>();
         }
 
         public List<string> ListBy
@@ -69,6 +70,37 @@ namespace QuotesDB
             get; set;
         }
 
+        private object selectedItem;
+        public object SelectedItem
+        {
+            get
+            {
+                return selectedItem;
+            }
+            set
+            {
+                selectedItem = value;
+                LoadItem();
+                RaisePropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Quote> QuotesList { get; private set; }
+
+        private void LoadItem()
+        {
+            QuotesList.Clear();
+
+            if (selectedItem is Author)
+            {
+                var quotes = dataStore.GetQuotes((Author)selectedItem);
+                foreach (var q in quotes)
+                    QuotesList.Add(q);
+            }
+
+            RaisePropertyChanged("QuotesList");
+        }
+
         private string listPath;
         public string ListPath
         {
@@ -88,7 +120,7 @@ namespace QuotesDB
                     List<Author> authors = dataStore.GetAuthors();
                     ListItems.Clear();
 
-                    authors.Add(new DAO.Author() { ID = 1, Name = "TEST" });
+                    //authors.Add(new DAO.Author() { ID = 1, Name = "TEST" });
 
                     foreach (var a in authors)
                         ListItems.Add(a);

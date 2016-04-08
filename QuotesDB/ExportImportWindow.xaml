@@ -1,0 +1,24 @@
+﻿<Window x:Class="QuotesDB.ExportImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuotesDB"
+        mc:Ignorable="d"
+        Title="ExportImportWindow" Height="288.096" Width="401.191">
+    <StackPanel>
+        <GroupBox Header="Export">
+            <DockPanel LastChildFill="True">
+                <Label DockPanel.Dock="Left">Save To XML:</Label>
+                <Button DockPanel.Dock="Right" Command="{Binding ExportCommand}">Export</Button>
+                <TextBox Text="{Binding ExportPath}" />
+            </DockPanel>
+        </GroupBox>
+        <GroupBox Header="Import">
+
+        </GroupBox>
+        <GroupBox Header="Other">
+            <Button>Clear Database</Button>
+        </GroupBox>
+    </StackPanel>
+</Window>

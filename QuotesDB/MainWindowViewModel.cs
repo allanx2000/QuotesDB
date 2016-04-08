@@ -45,6 +45,18 @@ namespace QuotesDB
             get { return new CommandHelper(LoadDatabase); }
         }
 
+        public ICommand ExportImportCommand
+        {
+            get
+            {
+                return new CommandHelper(() =>
+                {
+                    var window = new ExportImportWindow(dataStore);
+                    window.ShowDialog();
+                });
+            }
+        }
+
         public ICommand OpenQuotesManagerCommand
         {
             get
