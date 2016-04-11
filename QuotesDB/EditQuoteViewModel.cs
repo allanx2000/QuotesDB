@@ -27,7 +27,7 @@ namespace QuotesDB
 
             Quote = quote.Text;
             Rating = quote.Rating;
-            Author = ds.GetAuthor(quote.AuthorId).Name;
+            Author = quote.Author.Name;
             Displayed = quote.Displayed;
 
             List<Tag> tags = ds.GetTagsForQuote(quote);
@@ -61,10 +61,10 @@ namespace QuotesDB
                 var author = ds.GetAuthors(Author).FirstOrDefault();
                 if (author == null)
                 {
-                    qt.AuthorId = ds.CreateAuthor(new Author() { Name = Author });
+                    qt.Author = ds.CreateAuthor(new Author() { Name = Author });
                 }
                 else
-                    qt.AuthorId = author.ID;
+                    qt.Author = author;
 
                 qt.Text = Quote;
                 qt.Rating = Rating;

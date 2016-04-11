@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="500" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -28,8 +28,14 @@
             <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
         </Grid>
         
-        <GroupBox Grid.Row="2" IsEnabled="{Binding Loaded}">
-            <Label>Random Quote</Label>
+        <GroupBox Grid.Row="2" Header="Random Quote" IsEnabled="{Binding Loaded}">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Bottom">
+                    <Button>Change</Button>
+                </StackPanel>
+                
+                <local:QuoteViewer x:Name="QuotesViewer" />                
+            </DockPanel>
         </GroupBox>
 
         <StackPanel Grid.Row="3" IsEnabled="{Binding Loaded}">

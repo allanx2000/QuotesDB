@@ -70,16 +70,16 @@ namespace QuotesDB
             get; set;
         }
 
-        private object selectedItem;
-        public object SelectedItem
+        private object selectedQuote;
+        public object SelectedQuote
         {
             get
             {
-                return selectedItem;
+                return selectedQuote;
             }
             set
             {
-                selectedItem = value;
+                selectedQuote = value;
                 LoadItem();
                 RaisePropertyChanged();
             }
@@ -91,9 +91,9 @@ namespace QuotesDB
         {
             QuotesList.Clear();
 
-            if (selectedItem is Author)
+            if (selectedQuote is Author)
             {
-                var quotes = dataStore.GetQuotes((Author)selectedItem);
+                var quotes = dataStore.GetQuotes((Author)selectedQuote);
                 foreach (var q in quotes)
                     QuotesList.Add(q);
             }

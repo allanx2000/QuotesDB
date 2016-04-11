@@ -86,14 +86,17 @@ namespace QuotesDB.DAO
 
         #endregion
 
-        public int CreateAuthor(Author author)
+        public Author CreateAuthor(Author author)
         {
-            string sql = "INSERT INTO {0} VALUES(NULL,'{1}')";
-            sql = String.Format(sql, AuthorsTable, author.Name);
+            string sql = "INSERT INTO {0} VALUES({1},'{2}')";
+            sql = String.Format(sql, AuthorsTable, 
+                (author.ID > 0? author.ID.ToString() : "NULL"), 
+                author.Name);
 
             ExecuteNonQuery(sql);
 
-            return SQLUtils.GetLastInsertRow(this);
+            author.ID = SQLUtils.GetLastInsertRow(this);
+            return author;
         }
 
         public void UpdateAuthor(Author author)
@@ -117,11 +120,14 @@ namespace QuotesDB.DAO
                 var q = new Quote()
                 {
                     ID = Convert.ToInt32(row["ID"]),
-                    AuthorId = Convert.ToInt32(row["AuthorID"]),
                     Displayed = Convert.ToInt32(row["Count"]),
                     Rating = Convert.ToInt32(row["Rating"]), 
                     Text = row["Text"].ToString()
                 };
+
+                Author author = GetAuthor(Convert.ToInt32(row["AuthorID"]));
+                q.Author = author;
+                q.Tags = GetTagsForQuote(q);
 
                 quotes.Add(q);
             }
@@ -155,9 +161,14 @@ namespace QuotesDB.DAO
 
         public int InsertQuote(Quote quote)
         {
-            string sql = "INSERT INTO {0} VALUES(NULL,{1},'{2}',{3},{4})";
-            sql = String.Format(sql, QuotesTable, quote.AuthorId, 
-                 SQLUtils.SQLEncode(quote.Text), quote.Displayed, quote.Rating);
+            string sql = "INSERT INTO {0} VALUES({1},{2},'{3}',{4},{5})";
+            sql = String.Format(sql, QuotesTable, 
+                quote.ID > 0? quote.ID.ToString() : "NULL",
+                quote.Author.ID, 
+                 SQLUtils.SQLEncode(quote.Text), 
+                 quote.Displayed, 
+                 quote.Rating);
+
             ExecuteNonQuery(sql);
             
             return SQLUtils.GetLastInsertRow(this);
@@ -218,8 +229,8 @@ namespace QuotesDB.DAO
 
             var author = new Author()
                 {
-                    ID = (int)row["ID"],
-                    Name = (string)row["Name"]
+                    ID = Convert.ToInt32(row["ID"]),
+                    Name = row["Name"].ToString()
                 };
             
             return author;

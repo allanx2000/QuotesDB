@@ -16,20 +16,72 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <Label>List:</Label>
             <ComboBox ItemsSource="{Binding ListBy}" Width="100" SelectedItem="{Binding SelectedList}" />
         </StackPanel>
+        
         <ListBox Grid.Row="1" Grid.Column="0" 
                  ItemsSource="{Binding ListItems}" 
                  DisplayMemberPath="{Binding ListPath}"
-                 SelectedItem="{Binding SelectedItem}"/>
+                 SelectedItem="{Binding SelectedQuote}"/>
 
-        <DataGrid Grid.Row="1" Grid.Column="1" AutoGenerateColumns="True" ItemsSource="{Binding QuotesList}">
+        <StackPanel Grid.Row="2">
+            <Button Command="{Binding DeleteFromListCommand}">Delete</Button>
+        </StackPanel>
+
+        <ListBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
+                 ItemsSource="{Binding QuotesList}" SelectedItem="{Binding SelectedItem}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Row="0" Grid.ColumnSpan="3">
+                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap"/>
+                        </Label>
+
+                        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
+                            <Label FontWeight="Bold">Rating:</Label>
+                            <Label Content="{Binding Rating}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                            <Label FontWeight="Bold">Displayed:</Label>
+                            <Label Content="{Binding Displayed}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
+                            <Label FontWeight="Bold">Tags:</Label>
+                            <Label Content="{Binding TagsText}"/>
+                        </StackPanel>
+
+
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <!--
+        <DataGrid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" ItemsSource="{Binding QuotesList}">
+            <DataGrid.Columns>
+                
+            </DataGrid.Columns>
         </DataGrid>
-
+        -->
 
         <StackPanel Grid.Row="1" Grid.Column="2" >
             <Button Command="{Binding AddQuoteCommand}">New</Button>

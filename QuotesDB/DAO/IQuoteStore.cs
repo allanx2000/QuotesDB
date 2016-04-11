@@ -5,7 +5,7 @@ namespace QuotesDB.DAO
 {
     public interface IQuoteStore
     {
-        int CreateAuthor(Author author);
+        Author CreateAuthor(Author author);
         void UpdateAuthor(Author author);
         List<Quote> GetQuotes(Author author);
         List<Author> GetAuthors(string search = null);
