@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="QuoteService.cs" />
     <Compile Include="QuoteViewer.xaml.cs">
       <DependentUpon>QuoteViewer.xaml</DependentUpon>
     </Compile>

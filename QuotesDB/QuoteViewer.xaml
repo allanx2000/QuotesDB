@@ -12,7 +12,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <TextBlock FontFamily="{Binding QuoteFont}" FontSize="{Binding QuoteSize, FallbackValue=15}" TextAlignment="Center" FontStyle="{Binding QuoteStyle, FallbackValue=Italic}" 
+            <TextBlock Margin="30 10" FontFamily="{Binding QuoteFont}" FontSize="{Binding QuoteSize, FallbackValue=15}" TextAlignment="Center" FontStyle="{Binding QuoteStyle, FallbackValue=Italic}" 
                    Text="{Binding Quote, FallbackValue='This is a quote'}"    
                    TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
@@ -30,8 +30,9 @@
             </Grid.ColumnDefinitions>
             
             <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" DockPanel.Dock="Left">Rating:</Label>
-            <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="5 0" Minimum="0" Maximum="5"  TickFrequency="1" />
-            <Label Grid.Row="0" Grid.Column="2" Width="40" DockPanel.Dock="Bottom" HorizontalContentAlignment="Center" Content="{Binding Rating, FallbackValue=5}"/>
+            <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="5 0" Minimum="0" Maximum="5"  TickFrequency="1"
+                    Value="{Binding Rating}"/>
+            <Label Grid.Row="0" Grid.Column="2" Width="40" DockPanel.Dock="Bottom" HorizontalContentAlignment="Center" Content="{Binding RatingText, FallbackValue=5}"/>
             
             
         </Grid>

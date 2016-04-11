@@ -28,14 +28,14 @@
         <ListBox Grid.Row="1" Grid.Column="0" 
                  ItemsSource="{Binding ListItems}" 
                  DisplayMemberPath="{Binding ListPath}"
-                 SelectedItem="{Binding SelectedQuote}"/>
+                 SelectedItem="{Binding SelectedListItem}"/>
 
         <StackPanel Grid.Row="2">
             <Button Command="{Binding DeleteFromListCommand}">Delete</Button>
         </StackPanel>
 
         <ListBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" 
-                 ItemsSource="{Binding QuotesList}" SelectedItem="{Binding SelectedItem}"
+                 ItemsSource="{Binding QuotesList}" SelectedItem="{Binding SelectedQuote}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -85,7 +85,8 @@
 
         <StackPanel Grid.Row="1" Grid.Column="2" >
             <Button Command="{Binding AddQuoteCommand}">New</Button>
-            <Button>Edit</Button>
+            <Button Command="{Binding EditQuoteCommand}">Edit</Button>
+            <Button Command="{Binding DeleteQuoteCommand}">Delete</Button>
         </StackPanel>
         
 

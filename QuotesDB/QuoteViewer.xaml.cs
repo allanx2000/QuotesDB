@@ -31,10 +31,23 @@ namespace QuotesDB
             vm = new QuoteViewerViewModel();
             this.DataContext = vm;
         }
+
+        public void SetQuote(Quote quote)
+        {
+            vm.SetQuote(quote);
+        }
+
+        public void SetDataStore(IQuoteStore dataStore)
+        {
+            vm.SetDataStore(dataStore);
+        }
     }
 
     public class QuoteViewerViewModel : ViewModel
     {
+        //TODO: Make this Singleton, DI, Global Service
+        private IQuoteStore ds;
+
         private int quoteSize = 15;
         public int QuoteSize
         {
@@ -47,7 +60,73 @@ namespace QuotesDB
                 quoteSize = value;
             }
         }
-
+        
         private Quote quote;
+
+        public string Quote
+        {
+            get
+            {
+                return quote == null ? "" : quote.Text;
+            }
+        }
+
+        public string Author
+        {
+            get
+            {
+                return quote == null ? "" : "-" + quote.Author.Name;
+            }
+        }
+
+        public int Rating
+        {
+            get
+            {
+                return quote == null ? 0 : quote.Rating;
+            }
+            set
+            {
+                if (quote != null)
+                {
+                    if (value == quote.Rating)
+                        return;
+
+                    quote.Rating = value;
+                    ds.UpdateQuoteRating(quote);
+                }
+
+                RaisePropertyChanged();
+                RaisePropertyChanged("RatingText");
+            }
+        }
+
+        public string RatingText
+        {
+            get
+            {
+                return Rating == 0 ? "NA" : Rating.ToString();
+            }
+        }
+
+        public void SetDataStore(IQuoteStore ds)
+        {
+            this.ds = ds;
+        }
+
+        public void SetQuote(Quote quote)
+        {
+            this.quote = quote;
+
+            quote.Displayed += 1;
+            ds.UpdateQuoteCount(quote);
+
+            RaisePropertyChanged("Quote");
+            RaisePropertyChanged("Author");
+            RaisePropertyChanged("Rating");
+            RaisePropertyChanged("RatingText");
+
+        }
+
     }
 }

@@ -10,7 +10,7 @@ namespace QuotesDB
     internal class MainWindowViewModel : ViewModel
     {
         private MainWindow window;
-
+        private QuoteViewer quoteViewer;
         private IQuoteStore dataStore;
 
         private string databasePath = Properties.Settings.Default.LastPath;
@@ -43,6 +43,11 @@ namespace QuotesDB
         public ICommand LoadCommand
         {
             get { return new CommandHelper(LoadDatabase); }
+        }
+
+        public ICommand RefreshQuoteCommand
+        {
+            get { return new CommandHelper(RefreshQuote); }
         }
 
         public ICommand ExportImportCommand
@@ -86,6 +91,12 @@ namespace QuotesDB
 
                 RaisePropertyChanged("Loaded");
                 RaisePropertyChanged("NotLoaded");
+
+
+                quoteViewer.SetDataStore(dataStore);
+
+                RefreshQuote();
+
             }
             catch (Exception e)
             {
@@ -93,10 +104,20 @@ namespace QuotesDB
             }
         }
 
-        public MainWindowViewModel(MainWindow window)
+        public MainWindowViewModel(MainWindow window, QuoteViewer quoteViewer)
         {
             this.window = window;
-            
+            this.quoteViewer = quoteViewer;
+
+        }
+
+        private void RefreshQuote()
+        {
+            if (dataStore != null)
+            {
+                var quote = dataStore.GetRandomQuote();
+                quoteViewer.SetQuote(quote);
+            }
         }
     }
 }

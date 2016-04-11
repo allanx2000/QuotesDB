@@ -111,6 +111,13 @@ namespace QuotesDB.DAO
             return ParseQuotes(ExecuteSelect(sql));
         }
 
+        private Quote GetQuote(int id)
+        {
+            string sql = "SELECT * FROM " + QuotesTable + " WHERE Id=" + id;
+
+            return ParseQuotes(ExecuteSelect(sql)).FirstOrDefault();
+        }
+
         private List<Quote> ParseQuotes(DataTable data)
         {
             List<Quote> quotes = new List<Quote>();
@@ -173,15 +180,59 @@ namespace QuotesDB.DAO
             
             return SQLUtils.GetLastInsertRow(this);
         }
+        
+        public void UpdateQuoteCount(Quote quote)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("UPDATE " + QuotesTable);
+            sb.AppendLine("SET Count = " + quote.Displayed);
+            sb.AppendLine("WHERE ID = " + quote.ID);
+
+            string sql = sb.ToString();
+            ExecuteNonQuery(sql);
+        }
+
+        public void UpdateQuoteRating(Quote quote)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("UPDATE " + QuotesTable);
+            sb.AppendLine("SET Rating = " + quote.Rating);
+            sb.AppendLine("WHERE ID = " + quote.ID);
+
+            string sql = sb.ToString();
+            ExecuteNonQuery(sql);
+        }
 
         public void UpdateQuote(Quote quote)
         {
-            throw new NotImplementedException();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("UPDATE " + QuotesTable);
+
+            List<string> parts = new List<string>();
+            parts.Add("AuthorId = " + quote.Author.ID);
+            parts.Add("Text = '" + SQLUtils.SQLEncode(quote.Text) + "'");
+            parts.Add("Count = " + quote.Displayed);
+            parts.Add("Rating = " + quote.Rating);
+            sb.AppendLine("SET " + String.Join(", ", parts));
+
+            sb.AppendLine("WHERE ID = " + quote.ID);
+
+            string sql = sb.ToString();
+            ExecuteNonQuery(sql);
+
+            UpdateTags(quote, quote.Tags.Select(x => x.TagName));
         }
 
+        //TODO: Make all return modified object
         public int InsertTag(Tag tag)
         {
-            throw new NotImplementedException();
+            string sql = "INSERT INTO {0} VALUES({1},'{2}')";
+            sql = String.Format(sql, TagsTable,
+                tag.ID == 0 ? "NULL" : tag.ID.ToString(),
+                SQLUtils.SQLEncode(tag.TagName));
+
+            ExecuteNonQuery(sql);
+            return SQLUtils.GetLastInsertRow(this);
         }
 
         public int UpdateTag(Tag tag)
@@ -312,6 +363,44 @@ namespace QuotesDB.DAO
         public void Import(Bundle data)
         {
             throw new NotImplementedException();
+        }
+
+        public void DeleteQuote(Quote quote)
+        {
+            string sql = "DELETE FROM {0} WHERE ID = {1}";
+            sql = String.Format(sql, QuotesTable, quote.ID);
+            ExecuteNonQuery(sql);
+
+            //TODO: Create Foreign key mapping
+            sql = "DELETE FROM {0} WHERE QuoteID = {1}";
+            sql = String.Format(sql, TagMapTable, quote.ID);
+            ExecuteNonQuery(sql);
+        }
+
+        private static Random random = new Random(DateTime.Now.Millisecond);
+
+        public Quote GetRandomQuote()
+        {
+            int count = GetTotalQuotes();
+            
+            Quote quote = null;
+
+            while (quote == null)
+            {
+                int id = random.Next(1, count);
+                quote = GetQuote(id);
+            }
+
+            return quote;
+        }
+
+        
+
+        private int GetTotalQuotes()
+        {
+            string sql = "SELECT count(*) FROM " + QuotesTable;
+
+            return Convert.ToInt32(ExecuteScalar(sql));
         }
 
         public DataStore(string filename, bool isNew) : base(filename, isNew)

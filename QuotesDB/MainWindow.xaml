@@ -31,10 +31,10 @@
         <GroupBox Grid.Row="2" Header="Random Quote" IsEnabled="{Binding Loaded}">
             <DockPanel LastChildFill="True">
                 <StackPanel DockPanel.Dock="Bottom">
-                    <Button>Change</Button>
+                    <Button HorizontalAlignment="Center" Command="{Binding RefreshQuoteCommand}">Change</Button>
                 </StackPanel>
                 
-                <local:QuoteViewer x:Name="QuotesViewer" />                
+                <local:QuoteViewer x:Name="QuotesViewer" Loaded="QuotesViewer_Loaded" />                
             </DockPanel>
         </GroupBox>
 

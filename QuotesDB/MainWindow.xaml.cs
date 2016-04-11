@@ -25,8 +25,13 @@ namespace QuotesDB
         {
             InitializeComponent();
 
-            vm = new MainWindowViewModel(this);
+            vm = new MainWindowViewModel(this, QuotesViewer);
             this.DataContext = vm;
+        }
+
+        private void QuotesViewer_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
