@@ -1,0 +1,32 @@
+﻿<Window x:Class="QuotesDB.QuotesPopupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuotesDB"
+        mc:Ignorable="d"
+        Title="QuotesPopupWindow" Width="500" Topmost="True"
+        Opacity="{Binding WindowOpacity, FallbackValue=1}" WindowStartupLocation="CenterScreen" AllowsTransparency="True"
+        ResizeMode="NoResize" WindowStyle="None" SizeToContent="Height">
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Duration="00:00:01" Storyboard.TargetProperty="Opacity" To="1" />
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <local:QuoteViewer Grid.Row="0" x:Name="QuotesViewer"/>
+
+        <Button Grid.Row="1" HorizontalAlignment="Center" Command="{Binding CloseCommand}">Close</Button>
+        
+    </Grid>
+</Window>

@@ -41,14 +41,27 @@ namespace QuotesDB
         {
             vm.SetDataStore(dataStore);
         }
+        
     }
 
     public class QuoteViewerViewModel : ViewModel
     {
-        //TODO: Make this Singleton, DI, Global Service
         private IQuoteStore ds;
 
-        private int quoteSize = 15;
+        private int authorSize = 14;
+        public int AuthorSize
+        {
+            get
+            {
+                return authorSize;
+            }
+            set
+            {
+                authorSize = value;
+            }
+        }
+
+        private int quoteSize = 16;
         public int QuoteSize
         {
             get
@@ -116,6 +129,9 @@ namespace QuotesDB
 
         public void SetQuote(Quote quote)
         {
+            if (quote == null)
+                return;
+
             this.quote = quote;
 
             quote.Displayed += 1;
@@ -127,6 +143,6 @@ namespace QuotesDB
             RaisePropertyChanged("RatingText");
 
         }
-
+        
     }
 }

@@ -3,6 +3,7 @@ using Innouvous.Utils.MVVM;
 using QuotesDB.DAO;
 using QuotesDB.Exporter;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,8 +13,44 @@ namespace QuotesDB
     {
         private IQuoteStore ds;
         private Window window;
+        
+        public ExportImportViewModel(Window window, IQuoteStore ds)
+        {
+            this.window = window;
+            this.ds = ds;
+        }
 
-        public string ExportPath { get; set; }
+        #region Export
+        private string exportPath;
+        public string ExportPath {
+            get
+            {
+                return exportPath;
+            }
+            set
+            {
+                exportPath = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public ICommand BrowseForExportCommand
+        {
+            get
+            {
+                return new CommandHelper(BrowseForExport);
+            }
+        }
+
+        private void BrowseForExport()
+        {
+            var sfd = DialogsUtility.CreateSaveFileDialog("Export");
+            DialogsUtility.AddExtension(sfd, "XML File", "*.xml");
+
+            sfd.ShowDialog();
+
+            ExportPath = sfd.FileName;
+        }
 
         public ICommand ExportCommand
         {
@@ -42,10 +79,70 @@ namespace QuotesDB
             }
         }
 
-        public ExportImportViewModel(Window window, IQuoteStore ds)
+        #endregion
+
+        #region Import
+        private string importPath;
+        public string ImportPath
         {
-            this.window = window;
-            this.ds = ds;
+            get
+            {
+                return importPath;
+            }
+            set
+            {
+                importPath = value;
+                RaisePropertyChanged();
+            }
         }
+
+        public ICommand BrowseForImportCommand
+        {
+            get
+            {
+                return new CommandHelper(BrowseForImport);
+            }
+        }
+
+        private void BrowseForImport()
+        {
+            var ofd = DialogsUtility.CreateOpenFileDialog("Import");
+            DialogsUtility.AddExtension(ofd, "XML File", "*.xml");
+
+            ofd.ShowDialog();
+
+            ImportPath = ofd.FileName;
+        }
+
+        public ICommand ImportCommand
+        {
+            get
+            {
+                return new CommandHelper(Import);
+            }
+        }
+
+        public void Import()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(importPath) || !File.Exists(ImportPath))
+                    throw new Exception("File not found.");
+
+                Bundle bundle = Bundle.Deserialize(importPath);
+                ds.Import(bundle);
+
+                MessageBoxFactory.ShowInfo("Database has been imported.", "Imported");
+
+            }
+            catch (Exception e)
+            {
+                MessageBoxFactory.ShowError(e);
+            }
+        }
+
+
+        #endregion
+
     }
 }

@@ -45,6 +45,24 @@ namespace QuotesDB
             get { return new CommandHelper(LoadDatabase); }
         }
 
+        public ICommand BrowseCommand
+        {
+            get
+            {
+                return new CommandHelper(Browse);
+            }
+        }
+
+        public void Browse()
+        {
+            var dlg = DialogsUtility.CreateSaveFileDialog("Select Database File");
+            DialogsUtility.AddExtension(dlg, "SQLite Database", "*.db");
+            dlg.ShowDialog();
+
+            if (!string.IsNullOrEmpty(dlg.FileName))
+                DatabasePath = dlg.FileName;
+        }
+
         public ICommand RefreshQuoteCommand
         {
             get { return new CommandHelper(RefreshQuote); }
@@ -62,6 +80,18 @@ namespace QuotesDB
             }
         }
 
+        public ICommand OpenPopupSettingsCommand
+        {
+            get
+            {
+                return new CommandHelper(() =>
+                {
+                    PopupSettings window = new PopupSettings();
+                    window.ShowDialog();
+                });
+            }
+        }
+
         public ICommand OpenQuotesManagerCommand
         {
             get
@@ -69,7 +99,7 @@ namespace QuotesDB
                 return new CommandHelper(() =>
                 {
                     Manager manager = new Manager(dataStore);
-                    manager.Show();
+                    manager.ShowDialog();
                 });
             }
         }
@@ -84,6 +114,7 @@ namespace QuotesDB
                 var exists = File.Exists(databasePath);
 
                 dataStore = new DataStore(databasePath, !exists);
+                QuoteService.Instance.SetDataStore(dataStore);
 
                 //Store
                 Properties.Settings.Default.LastPath = databasePath;
@@ -96,7 +127,8 @@ namespace QuotesDB
                 quoteViewer.SetDataStore(dataStore);
 
                 RefreshQuote();
-
+                
+                QuoteService.Instance.StartTimer();
             }
             catch (Exception e)
             {

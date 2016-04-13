@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="EditQuoteWindow" Height="300" Width="300">
+        Title="EditQuoteWindow" Height="300" Width="300" Loaded="Window_Loaded"
+        >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -21,10 +22,11 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0">Author:</Label>
-        <ComboBox Grid.Row="0" Grid.Column="1" DisplayMemberPath="Name" ItemsSource="{Binding Authors}" Text="{Binding Author}" IsEditable="True"/>
+        <ComboBox Name="AuthorComboBox" Grid.Row="0" Grid.Column="1" DisplayMemberPath="Name" ItemsSource="{Binding Authors}" Text="{Binding Author}" IsEditable="True"/>
 
         <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Top">Text:</Label>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Quote}" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <TextBox Style="{StaticResource MultilineTextBox}" Grid.Row="1" Grid.Column="1" Text="{Binding Quote}" 
+                 TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
         <Label Grid.Row="2" Grid.Column="0" >Tags:</Label>
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Tags}" />

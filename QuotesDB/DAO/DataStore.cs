@@ -18,8 +18,16 @@ namespace QuotesDB.DAO
         private const string QuotesTable = "tbl_quotes";
         private const string TagMapTable = "tbl_tag_map";
 
-        #region Create Tables
+        public DataStore(string filename, bool isNew) : base(filename, isNew)
+        {
+            if (isNew)
+            {
+                CreateTables();
+            }
+        }
         
+        #region Create Tables
+
         private void CreateTables()
         {
             CreateAuthorsTable();
@@ -86,11 +94,29 @@ namespace QuotesDB.DAO
 
         #endregion
 
+        #region Author
+
+        public void DeleteAuthor(Author author)
+        {
+            var quotes = GetQuotes(author);
+
+            foreach (var q in quotes)
+            {
+                DeleteQuote(q);
+            }
+
+            string sql = "DELETE FROM {0} WHERE ID = {1}";
+            sql = string.Format(sql, AuthorsTable, author.ID);
+
+            ExecuteNonQuery(sql);
+            
+            
+        }
         public Author CreateAuthor(Author author)
         {
             string sql = "INSERT INTO {0} VALUES({1},'{2}')";
             sql = String.Format(sql, AuthorsTable, 
-                (author.ID > 0? author.ID.ToString() : "NULL"), 
+                "NULL", 
                 author.Name);
 
             ExecuteNonQuery(sql);
@@ -104,6 +130,50 @@ namespace QuotesDB.DAO
             throw new NotImplementedException();
         }
 
+        public Author GetAuthor(int id)
+        {
+            string sql = "SELECT * FROM {0} WHERE ID = {1}";
+            sql = String.Format(sql, AuthorsTable, id);
+            var data = this.ExecuteSelect(sql);
+
+            var row = data.Rows[0];
+
+            var author = new Author()
+            {
+                ID = Convert.ToInt32(row["ID"]),
+                Name = row["Name"].ToString()
+            };
+
+            return author;
+        }
+
+        public List<Author> GetAuthors(string search = null)
+        {
+            string sql = "SELECT * FROM " + AuthorsTable;
+
+            if (!String.IsNullOrEmpty(search))
+                sql += String.Format(" WHERE Name LIKE '%{0}%'", search);
+
+            var data = this.ExecuteSelect(sql);
+
+            List<Author> authors = new List<Author>();
+            foreach (DataRow row in data.Rows)
+            {
+                var author = new Author()
+                {
+                    ID = Convert.ToInt32(row["ID"]),
+                    Name = row["Name"].ToString()
+                };
+
+                authors.Add(author);
+            }
+
+            return authors;
+        }
+
+        #endregion
+
+        #region Quotes
         public List<Quote> GetQuotes(Author author)
         {
             string sql = "SELECT * FROM " + QuotesTable + " WHERE AuthorId=" + author.ID;
@@ -141,36 +211,14 @@ namespace QuotesDB.DAO
 
             return quotes;
         }
-
-        public List<Author> GetAuthors(string search = null)
+        
+        public Quote InsertQuote(Quote quote)
         {
-            string sql = "SELECT * FROM " + AuthorsTable;
+            //TODO: Add insert Author, Tag?
 
-            if (!String.IsNullOrEmpty(search))
-                sql += String.Format(" WHERE Name LIKE '%{0}%'", search);
-
-            var data = this.ExecuteSelect(sql);
-
-            List<Author> authors = new List<Author>();
-            foreach (DataRow row in data.Rows)
-            {
-                var author = new Author()
-                {
-                    ID = Convert.ToInt32(row["ID"]),
-                    Name = row["Name"].ToString()
-                };
-
-                authors.Add(author);
-            }
-
-            return authors;
-        }
-
-        public int InsertQuote(Quote quote)
-        {
             string sql = "INSERT INTO {0} VALUES({1},{2},'{3}',{4},{5})";
             sql = String.Format(sql, QuotesTable, 
-                quote.ID > 0? quote.ID.ToString() : "NULL",
+                "NULL",
                 quote.Author.ID, 
                  SQLUtils.SQLEncode(quote.Text), 
                  quote.Displayed, 
@@ -178,9 +226,60 @@ namespace QuotesDB.DAO
 
             ExecuteNonQuery(sql);
             
-            return SQLUtils.GetLastInsertRow(this);
+            quote.ID = SQLUtils.GetLastInsertRow(this);
+            
+            return quote;
         }
         
+        private List<Quote> GetQuotes()
+        {
+            string sql = "SELECT * FROM " + QuotesTable;
+            List<Quote> quotes = ParseQuotes(ExecuteSelect(sql));
+
+            return quotes;
+        }
+
+        public void DeleteQuote(Quote quote)
+        {
+            string sql = "DELETE FROM {0} WHERE ID = {1}";
+            sql = String.Format(sql, QuotesTable, quote.ID);
+            ExecuteNonQuery(sql);
+
+            //TODO: Create Foreign key mapping
+            sql = "DELETE FROM {0} WHERE QuoteID = {1}";
+            sql = String.Format(sql, TagMapTable, quote.ID);
+            ExecuteNonQuery(sql);
+
+        }
+
+        private static Random random;
+        public Quote GetRandomQuote()
+        {
+            if (random == null)
+                 random = new Random(DateTime.Now.Millisecond);
+
+            int count = GetTotalQuotes();
+            if (count == 0)
+                return null;
+
+            Quote quote = null;
+
+            while (quote == null)
+            {
+                int id = random.Next(1, count);
+                quote = GetQuote(id);
+            }
+
+            return quote;
+        }
+
+        public int GetTotalQuotes()
+        {
+            string sql = "SELECT count(*) FROM " + QuotesTable;
+
+            return Convert.ToInt32(ExecuteScalar(sql));
+        }
+
         public void UpdateQuoteCount(Quote quote)
         {
             StringBuilder sb = new StringBuilder();
@@ -223,19 +322,24 @@ namespace QuotesDB.DAO
             UpdateTags(quote, quote.Tags.Select(x => x.TagName));
         }
 
-        //TODO: Make all return modified object
-        public int InsertTag(Tag tag)
+        #endregion
+
+        #region Tags
+        public Tag InsertTag(Tag tag)
         {
             string sql = "INSERT INTO {0} VALUES({1},'{2}')";
             sql = String.Format(sql, TagsTable,
-                tag.ID == 0 ? "NULL" : tag.ID.ToString(),
+                "NULL",
                 SQLUtils.SQLEncode(tag.TagName));
 
             ExecuteNonQuery(sql);
-            return SQLUtils.GetLastInsertRow(this);
+
+            tag.ID = SQLUtils.GetLastInsertRow(this);
+
+            return tag;
         }
 
-        public int UpdateTag(Tag tag)
+        public void UpdateTag(Tag tag)
         {
             throw new NotImplementedException();
         }
@@ -270,23 +374,6 @@ namespace QuotesDB.DAO
             return tags;
         }
 
-        public Author GetAuthor(int id)
-        {
-            string sql = "SELECT * FROM {0} WHERE ID = {1}";
-            sql = String.Format(sql, AuthorsTable, id);
-            var data = this.ExecuteSelect(sql);
-
-            var row = data.Rows[0];
-
-            var author = new Author()
-                {
-                    ID = Convert.ToInt32(row["ID"]),
-                    Name = row["Name"].ToString()
-                };
-            
-            return author;
-        }
-
         public List<Tag> GetTagsForQuote(Quote quote)
         {
             int id = quote.ID;
@@ -309,9 +396,11 @@ namespace QuotesDB.DAO
             {
                 Tag tag = GetTag(t);
                 if (tag == null)
-                    ids.Add(InsertTag(new Tag() { TagName = t }));
-                else
-                    ids.Add(tag.ID);
+                {
+                    tag = InsertTag(new Tag() { TagName = t });
+                }
+
+                ids.Add(tag.ID);
             }
 
             foreach (int i in ids)
@@ -319,15 +408,7 @@ namespace QuotesDB.DAO
                 InsertTagMap(qt.ID, i);
             }
         }
-
-        private void InsertTagMap(int quoteId, int tagId)
-        {
-            string sql = "INSERT INTO {0} VALUES({1},{2})";
-            sql = String.Format(sql, TagMapTable, tagId, quoteId);
-            ExecuteNonQuery(sql); 
-
-        }
-
+        
         private Tag GetTag(string tag)
         {
             string sql = "SELECT * FROM " + TagsTable + " WHERE Tag = '" + tag + "'";
@@ -336,13 +417,43 @@ namespace QuotesDB.DAO
             return ParseTags(data).FirstOrDefault();
         }
 
+
+        public int GetQuotesCount(Tag tag)
+        {
+            string sql = "SELECT count(*) FROM {0} q JOIN {1} tm ON tm.QuoteId = q.Id WHERE tm.TagId = {2}";
+            sql = String.Format(sql, QuotesTable, TagMapTable, tag.ID);
+
+            return Convert.ToInt32(ExecuteScalar(sql));
+        }
+
+        public void DeleteTag(Tag tag)
+        {
+            string sql = "DELETE FROM {0} WHERE TagId = {1}";
+            sql = String.Format(sql, TagMapTable, tag.ID);
+            ExecuteNonQuery(sql);
+
+            sql = "DELETE FROM {0} WHERE Id = {1}";
+            sql = String.Format(sql, TagsTable, tag.ID);
+            ExecuteNonQuery(sql);
+
+        }
+
+        #endregion
+
+        private void InsertTagMap(int quoteId, int tagId)
+        {
+            string sql = "INSERT INTO {0} VALUES({1},{2})";
+            sql = String.Format(sql, TagMapTable, tagId, quoteId);
+            ExecuteNonQuery(sql);
+
+        }
+
+        #region Export/Import
         public Bundle Export()
         {
             Bundle bundle = new Bundle();
             bundle.Quotes = GetQuotes();
-            bundle.Authors = GetAuthors();
-            bundle.Tags = GetTags();
-
+            
             foreach (Quote q in bundle.Quotes)
             {
                 var tags = GetTagsForQuote(q);
@@ -351,65 +462,67 @@ namespace QuotesDB.DAO
 
             return bundle;
         }
-
-        private List<Quote> GetQuotes()
-        {
-            string sql = "SELECT * FROM " + QuotesTable;
-            List<Quote> quotes = ParseQuotes(ExecuteSelect(sql));
-
-            return quotes;
-        }
-
+        
         public void Import(Bundle data)
         {
-            throw new NotImplementedException();
-        }
+            //TODO: Clear Database Tables
+            ClearTables();
 
-        public void DeleteQuote(Quote quote)
-        {
-            string sql = "DELETE FROM {0} WHERE ID = {1}";
-            sql = String.Format(sql, QuotesTable, quote.ID);
-            ExecuteNonQuery(sql);
+            Dictionary<string, Tag> tagLookup = new Dictionary<string, Tag>();
+            Dictionary<string, Author> authorLookup = new Dictionary<string, Author>();
 
-            //TODO: Create Foreign key mapping
-            sql = "DELETE FROM {0} WHERE QuoteID = {1}";
-            sql = String.Format(sql, TagMapTable, quote.ID);
-            ExecuteNonQuery(sql);
-        }
-
-        private static Random random = new Random(DateTime.Now.Millisecond);
-
-        public Quote GetRandomQuote()
-        {
-            int count = GetTotalQuotes();
-            
-            Quote quote = null;
-
-            while (quote == null)
+            foreach (Quote quote in data.Quotes)
             {
-                int id = random.Next(1, count);
-                quote = GetQuote(id);
-            }
+                //Insert Author
+                string a_name = quote.Author.Name;
 
-            return quote;
-        }
+                if (!authorLookup.ContainsKey(a_name))
+                {
+                    Author author = CreateAuthor(quote.Author);
+                    authorLookup.Add(author.Name, author);
+                }
 
-        
+                quote.Author = authorLookup[a_name];
 
-        private int GetTotalQuotes()
-        {
-            string sql = "SELECT count(*) FROM " + QuotesTable;
+                //Insert Tags
 
-            return Convert.ToInt32(ExecuteScalar(sql));
-        }
+                List<Tag> newTags = new List<Tag>();
 
-        public DataStore(string filename, bool isNew) : base(filename, isNew)
-        {
-            if (isNew)
-            {
-                CreateTables();
+                foreach (Tag tag in quote.Tags)
+                {
+                    if (!tagLookup.ContainsKey(tag.TagName))
+                    {
+                        Tag t = InsertTag(tag);
+                        tagLookup.Add(t.TagName, t);
+                    }
+
+                    newTags.Add(tagLookup[tag.TagName]);
+                }
+
+                quote.Tags = newTags;
+
+                Quote quote2 = InsertQuote(quote);
+
+                foreach (Tag t in newTags)
+                {
+                    InsertTagMap(quote2.ID, t.ID);
+                }
+                
             }
         }
-        
+
+        public void ClearTables()
+        {
+            string baseSQL = "DELETE FROM ";
+
+            ExecuteNonQuery(baseSQL + AuthorsTable);
+            ExecuteNonQuery(baseSQL + QuotesTable);
+            ExecuteNonQuery(baseSQL + TagMapTable);
+            ExecuteNonQuery(baseSQL + TagsTable);
+        }
+
+
+        #endregion
+
     }
 }

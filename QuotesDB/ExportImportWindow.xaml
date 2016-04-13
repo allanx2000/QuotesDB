@@ -8,15 +8,39 @@
         Title="ExportImportWindow" Height="288.096" Width="401.191">
     <StackPanel>
         <GroupBox Header="Export">
-            <DockPanel LastChildFill="True">
-                <Label DockPanel.Dock="Left">Save To XML:</Label>
-                <Button DockPanel.Dock="Right" Command="{Binding ExportCommand}">Export</Button>
-                <TextBox Text="{Binding ExportPath}" />
-            </DockPanel>
-        </GroupBox>
-        <GroupBox Header="Import">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <Label Grid.Column="0">Export To:</Label>
+                <TextBox Grid.Column="1" Text="{Binding ExportPath}" />
+                <Button Grid.Column="2" Command="{Binding BrowseForExportCommand}" >...</Button>
+                <Button Grid.Column="3" Command="{Binding ExportCommand}">Export</Button>
 
+            </Grid>
         </GroupBox>
+
+        <GroupBox Header="Import">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0">Import from:</Label>
+                <TextBox Grid.Column="1" Text="{Binding ImportPath}" />
+                <Button Grid.Column="2" Command="{Binding BrowseForImportCommand}" >...</Button>
+                <Button Grid.Column="3" Command="{Binding ImportCommand}">Import</Button>
+
+            </Grid>
+        </GroupBox>
+
         <GroupBox Header="Other">
             <Button>Clear Database</Button>
         </GroupBox>

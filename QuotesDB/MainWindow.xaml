@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="600">
+        Title="QuotesDB" Height="500" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -24,7 +24,7 @@
 
             <Label Grid.Column="0">Database:</Label>
             <TextBox IsEnabled="{Binding NotLoaded}" Grid.Column="1" Text="{Binding DatabasePath}"/>
-            <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="2">...</Button>
+            <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="2" Command="{Binding BrowseCommand}">...</Button>
             <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
         </Grid>
         
@@ -34,12 +34,13 @@
                     <Button HorizontalAlignment="Center" Command="{Binding RefreshQuoteCommand}">Change</Button>
                 </StackPanel>
                 
-                <local:QuoteViewer x:Name="QuotesViewer" Loaded="QuotesViewer_Loaded" />                
+                <local:QuoteViewer x:Name="QuotesViewer" />                
             </DockPanel>
         </GroupBox>
 
-        <StackPanel Grid.Row="3" IsEnabled="{Binding Loaded}">
+        <StackPanel Grid.Row="3" IsEnabled="{Binding Loaded}" Width="200">
             <Button Command="{Binding OpenQuotesManagerCommand}">Quotes Manager</Button>
+            <Button Command="{Binding OpenPopupSettingsCommand}">Popup Settings</Button>
             <Button Command="{Binding ExportImportCommand}">Export/Import</Button>
 
         </StackPanel>

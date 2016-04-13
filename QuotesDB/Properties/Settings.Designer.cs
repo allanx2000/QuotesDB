@@ -34,5 +34,40 @@ namespace QuotesDB.Properties {
                 this["LastPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PopupOn {
+            get {
+                return ((bool)(this["PopupOn"]));
+            }
+            set {
+                this["PopupOn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime LastPopup {
+            get {
+                return ((global::System.DateTime)(this["LastPopup"]));
+            }
+            set {
+                this["LastPopup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:00")]
+        public global::System.TimeSpan PopupFrequency {
+            get {
+                return ((global::System.TimeSpan)(this["PopupFrequency"]));
+            }
+            set {
+                this["PopupFrequency"] = value;
+            }
+        }
     }
 }

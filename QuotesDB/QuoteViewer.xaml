@@ -29,11 +29,12 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
+            <!--
             <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" DockPanel.Dock="Left">Rating:</Label>
             <Slider Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="5 0" Minimum="0" Maximum="5"  TickFrequency="1"
                     Value="{Binding Rating}"/>
             <Label Grid.Row="0" Grid.Column="2" Width="40" DockPanel.Dock="Bottom" HorizontalContentAlignment="Center" Content="{Binding RatingText, FallbackValue=5}"/>
-            
+            -->
             
         </Grid>
     </Grid>

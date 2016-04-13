@@ -12,7 +12,7 @@ namespace QuotesDB
     public class EditQuoteViewModel : ViewModel
     {
         private IQuoteStore ds;
-        private Quote quote;
+        private Quote existingQuote;
         private Window window;
 
         public EditQuoteViewModel(IQuoteStore ds, Window window)
@@ -23,7 +23,7 @@ namespace QuotesDB
 
         public void SetQuote(Quote quote)
         {
-            this.quote = quote;
+            this.existingQuote = quote;
 
             Quote = quote.Text;
             Rating = quote.Rating;
@@ -54,8 +54,9 @@ namespace QuotesDB
         {
             try
             {
-                bool isUpdate = quote != null;
-                Quote qt = isUpdate ? quote : new DAO.Quote();
+                bool isUpdate = existingQuote != null;
+
+                Quote qt = isUpdate ? existingQuote : new DAO.Quote();
                 qt.Text = Quote;
 
                 var author = ds.GetAuthors(Author).FirstOrDefault();
@@ -71,9 +72,10 @@ namespace QuotesDB
 
                 if (!isUpdate)
                 {
-                    int id = ds.InsertQuote(qt);
-                    qt.ID = id;
+                    qt = ds.InsertQuote(qt);
                 }
+                else
+                    ds.UpdateQuote(qt);
 
                 //Tags
                 if (!string.IsNullOrEmpty(Tags))

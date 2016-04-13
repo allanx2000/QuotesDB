@@ -38,22 +38,29 @@ namespace QuotesDB
 
             RaisePropertyChanged("QuotesList");
         }
-        
+
         private void RefreshList()
         {
             switch (selectedList)
             {
                 case Author:
-                    List<Author> authors = dataStore.GetAuthors();
+                    var authors = dataStore.GetAuthors().OrderBy(x => x.Name);
+
                     ListItems.Clear();
-
-                    //authors.Add(new DAO.Author() { ID = 1, Name = "TEST" });
-
                     foreach (var a in authors)
                         ListItems.Add(a);
 
                     ListPath = "Name";
 
+                    break;
+                case Tag:
+                    var tags = dataStore.GetTags().OrderBy(x => x.TagName);
+
+                    ListItems.Clear();
+                    foreach (var t in tags)
+                        ListItems.Add(t);
+
+                    ListPath = "TagName";
                     break;
             }
         }
@@ -71,7 +78,7 @@ namespace QuotesDB
                 RaisePropertyChanged();
             }
         }
-        
+
         public List<string> ListBy
         {
             get
@@ -137,7 +144,7 @@ namespace QuotesDB
 
         private void DeleteQuote()
         {
-            if (SelectedQuote != null 
+            if (SelectedQuote != null
                 && MessageBoxFactory.ShowConfirmAsBool("Are you sure you want to delete the selected quote?", "Confirm Delete"))
             {
                 dataStore.DeleteQuote(SelectedQuote);
@@ -161,6 +168,73 @@ namespace QuotesDB
             LoadItem();
         }
 
+        public ICommand EditQuoteCommand
+        {
+            get
+            {
+                return new CommandHelper(EditQuote);
+            }
+        }
+
+        private void EditQuote()
+        {
+            if (SelectedQuote == null)
+                return;
+
+            EditQuoteWindow edit = new EditQuoteWindow(dataStore, SelectedQuote);
+            edit.ShowDialog();
+
+            LoadItem();
+        }
+
+
+        public ICommand DeleteFromListCommand
+        {
+            get
+            {
+                return new CommandHelper(DeleteFromList);
+            }
+
+        }
+
+        private void DeleteFromList()
+        {
+            try
+            {
+                switch (SelectedList)
+                {
+                    case Author:
+                        Author author = SelectedListItem as Author;
+                        if (author != null && MessageBoxFactory.ShowConfirmAsBool("Delete author: " + author.Name, "Delete Author"))
+                        {
+                            dataStore.DeleteAuthor(author);
+                        }
+                        break;
+                    case Tag:
+                        Tag tag = selectedListItem as Tag;
+
+                        if (tag != null)
+                        {
+                            int count = dataStore.GetQuotesCount(tag);
+                            if (MessageBoxFactory.ShowConfirmAsBool(String.Format("{0} has {1} quotes associated with it. Continue delete?", tag.TagName , count), 
+                                "Delete Tag"))
+                            {
+                                dataStore.DeleteTag(tag);
+                            }
+                        }
+                        break;
+                }
+
+                RefreshList();
+            }
+            catch (Exception e)
+            {
+                MessageBoxFactory.ShowError(e);
+            }
+
+
+        }
+
         #endregion
 
         public ObservableCollection<Quote> QuotesList { get; private set; }
@@ -179,7 +253,7 @@ namespace QuotesDB
             }
         }
 
-        
+
         #endregion
 
     }
