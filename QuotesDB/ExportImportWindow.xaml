@@ -42,7 +42,7 @@
         </GroupBox>
 
         <GroupBox Header="Other">
-            <Button>Clear Database</Button>
+            <Button Command="{Binding ClearDatabaseCommand}">Clear Database</Button>
         </GroupBox>
     </StackPanel>
 </Window>

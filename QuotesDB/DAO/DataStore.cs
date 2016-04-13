@@ -36,20 +36,38 @@ namespace QuotesDB.DAO
             CreateTagsTable();
         }
 
+        private string LoadFromFile(string file)
+        {
+            using (StreamReader sr = new StreamReader("TableScripts\\" + file))
+            {
+                string str = sr.ReadToEnd();
+                sr.Close();
+                
+                return str;
+            }
+        }
+
         private void CreateTagsTable()
         {
+
+            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("CREATE TABLE " + TagsTable + " (");
             sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
             sb.AppendLine("Tag varchar(50) NOT NULL");
             sb.AppendLine(");");
-
+            
             string cmd = sb.ToString();
+            */
+
+            string cmd = LoadFromFile("tags.sql");
             this.ExecuteNonQuery(cmd);
+            
         }
 
         private void CreateQuotesTable()
         {
+            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("CREATE TABLE " + QuotesTable + " (");
             sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
@@ -59,14 +77,17 @@ namespace QuotesDB.DAO
             sb.AppendLine("Rating integer NOT NULL");
             sb.AppendLine(");");
 
-            //TODO: Add Author FK
-
             string cmd = sb.ToString();
+            */
+
+            string cmd = LoadFromFile("quotes.sql");
             this.ExecuteNonQuery(cmd);
+            
         }
 
         private void CreateTagMapTable()
         {
+            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("CREATE TABLE " + TagMapTable + " (");
             sb.AppendLine("TagId integer NOT NULL,");
@@ -74,14 +95,17 @@ namespace QuotesDB.DAO
             sb.AppendLine("PRIMARY KEY (TagId, QuoteId)");
             sb.AppendLine(");");
 
-            //TODO: FK Quote, Tags
-
             string cmd = sb.ToString();
+            */
+
+            string cmd = LoadFromFile("tagmap.sql");
             this.ExecuteNonQuery(cmd);
+
         }
 
         private void CreateAuthorsTable()
         {
+            /*
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("CREATE TABLE " + AuthorsTable + " (");
             sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
@@ -89,6 +113,10 @@ namespace QuotesDB.DAO
             sb.AppendLine(");");
 
             string cmd = sb.ToString();
+            this.ExecuteNonQuery(cmd);
+            */
+
+            string cmd = LoadFromFile("authors.sql");
             this.ExecuteNonQuery(cmd);
         }
 
@@ -98,12 +126,14 @@ namespace QuotesDB.DAO
 
         public void DeleteAuthor(Author author)
         {
+            /*
             var quotes = GetQuotes(author);
 
             foreach (var q in quotes)
             {
                 DeleteQuote(q);
             }
+            */
 
             string sql = "DELETE FROM {0} WHERE ID = {1}";
             sql = string.Format(sql, AuthorsTable, author.ID);
@@ -245,11 +275,12 @@ namespace QuotesDB.DAO
             sql = String.Format(sql, QuotesTable, quote.ID);
             ExecuteNonQuery(sql);
 
+            /*
             //TODO: Create Foreign key mapping
             sql = "DELETE FROM {0} WHERE QuoteID = {1}";
             sql = String.Format(sql, TagMapTable, quote.ID);
             ExecuteNonQuery(sql);
-
+            */
         }
 
         private static Random random;
@@ -428,11 +459,13 @@ namespace QuotesDB.DAO
 
         public void DeleteTag(Tag tag)
         {
+            /*
             string sql = "DELETE FROM {0} WHERE TagId = {1}";
             sql = String.Format(sql, TagMapTable, tag.ID);
             ExecuteNonQuery(sql);
+            */
 
-            sql = "DELETE FROM {0} WHERE Id = {1}";
+            string sql = "DELETE FROM {0} WHERE Id = {1}";
             sql = String.Format(sql, TagsTable, tag.ID);
             ExecuteNonQuery(sql);
 
@@ -465,7 +498,6 @@ namespace QuotesDB.DAO
         
         public void Import(Bundle data)
         {
-            //TODO: Clear Database Tables
             ClearTables();
 
             Dictionary<string, Tag> tagLookup = new Dictionary<string, Tag>();

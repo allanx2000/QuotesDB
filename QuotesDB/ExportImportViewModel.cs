@@ -141,8 +141,22 @@ namespace QuotesDB
             }
         }
 
-
         #endregion
 
+        public ICommand ClearDatabaseCommand
+        {
+            get
+            {
+                return new CommandHelper(ClearDatabase);
+            }
+        }
+
+        private void ClearDatabase()
+        {
+            if (MessageBoxFactory.ShowConfirmAsBool("Are you sure you want to clear the database?", "Confirm Clear Database", MessageBoxImage.Exclamation))
+            {
+                QuoteService.Instance.DataStore.ClearTables(); //TODO: Change all to use QuoteService
+            }
+        }
     }
 }
