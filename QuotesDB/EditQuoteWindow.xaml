@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="EditQuoteWindow" Height="300" Width="300" Loaded="Window_Loaded"
+        Title="Add/Edit Quote" Height="300" Width="300" Loaded="Window_Loaded"
         >
     <Grid>
         <Grid.ColumnDefinitions>
@@ -29,29 +29,22 @@
                  TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
 
         <Label Grid.Row="2" Grid.Column="0" >Tags:</Label>
-        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Tags}" />
-
-        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" LastChildFill="True">
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                <Label>Rating:</Label>
-                <TextBox Width="30" Text="{Binding Rating}" HorizontalAlignment="Left"/>
-            </StackPanel>
-            
-            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                <Label>Viewed:</Label>
-                <Label Content="{Binding Displayed}"/>
-                <Button>Reset</Button>
-            </StackPanel>
-
-            <Label/>
-
+        <DockPanel Grid.Row="2" Grid.Column="1" LastChildFill="True">
+            <Button DockPanel.Dock="Right" Command="{Binding EditTagsCommand}">Edit</Button>
+            <Label Content="{Binding Tags}" />
         </DockPanel>
         
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2"  Orientation="Horizontal" DockPanel.Dock="Right">
+            <Label>Viewed:</Label>
+            <Label Width="50" Content="{Binding Displayed}"/>
+            <Button Command="{Binding ResetCountCommand}">Reset</Button>
+        </StackPanel>
+
+
         <StackPanel Margin="10" Orientation="Horizontal" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center">
             <Button Command="{Binding SaveCommand}">Save</Button>
-            <Button Command="{Binding DeleteCommand}">Delete</Button>
-            <Button Command="{Binding CancelCommand}">Cancel</Button>
+            <Button Command="{Binding CloseCommand}">Cancel</Button>
         </StackPanel>
-        
+
     </Grid>
 </Window>

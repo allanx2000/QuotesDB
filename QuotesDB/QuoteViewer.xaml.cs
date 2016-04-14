@@ -37,16 +37,31 @@ namespace QuotesDB
             vm.SetQuote(quote);
         }
 
+        //TODO: Change to use quote service, need a Refresh command and error handling if QuoteService returns null
+        //Or retain, just edit SetQuote
+        
+        /*
         public void SetDataStore(IQuoteStore dataStore)
         {
             vm.SetDataStore(dataStore);
-        }
+        }*/
         
     }
 
     public class QuoteViewerViewModel : ViewModel
     {
         private IQuoteStore ds;
+
+        private IQuoteStore DataStore
+        {
+            get
+            {
+                if (ds == null)
+                    ds = QuoteService.Instance.DataStore;
+
+                return ds;
+            }
+        }
 
         private int authorSize = 14;
         public int AuthorSize
@@ -91,7 +106,7 @@ namespace QuotesDB
                 return quote == null ? "" : "-" + quote.Author.Name;
             }
         }
-
+        /*
         public int Rating
         {
             get
@@ -121,11 +136,14 @@ namespace QuotesDB
                 return Rating == 0 ? "NA" : Rating.ToString();
             }
         }
+        */
 
+        /*
         public void SetDataStore(IQuoteStore ds)
         {
             this.ds = ds;
         }
+        */
 
         public void SetQuote(Quote quote)
         {
@@ -135,7 +153,7 @@ namespace QuotesDB
             this.quote = quote;
 
             quote.Displayed += 1;
-            ds.UpdateQuoteCount(quote);
+            DataStore.UpdateQuoteCount(quote);
 
             RaisePropertyChanged("Quote");
             RaisePropertyChanged("Author");

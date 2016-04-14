@@ -15,7 +15,7 @@ namespace QuotesDB.DAO
         //public int AuthorId { get; set; }
         
         public int Displayed { get; set; }
-        public int Rating { get; set; }
+        //public int Rating { get; set; }
         
         public List<Tag> Tags { get; set; }
         public Author Author { get; set; }

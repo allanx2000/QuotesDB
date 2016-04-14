@@ -22,17 +22,17 @@ namespace QuotesDB
     {
         private readonly EditQuoteViewModel vm;
 
-        public EditQuoteWindow(IQuoteStore ds, Quote quote) : this(ds)
+        public EditQuoteWindow(Quote quote) : this()
         {
             vm.SetQuote(quote);
         }
 
 
-        public EditQuoteWindow(IQuoteStore ds)
+        public EditQuoteWindow()
         {
             InitializeComponent();
 
-            vm = new EditQuoteViewModel(ds, this);
+            vm = new EditQuoteViewModel(this);
             this.DataContext = vm;
 
 

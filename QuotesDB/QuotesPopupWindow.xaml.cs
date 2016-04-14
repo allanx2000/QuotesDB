@@ -28,7 +28,7 @@ namespace QuotesDB
 
             WindowOpacity = 0;
 
-            QuotesViewer.SetDataStore(ds);
+            //QuotesViewer.SetDataStore(ds);
             QuotesViewer.SetQuote(ds.GetRandomQuote());
         }
 

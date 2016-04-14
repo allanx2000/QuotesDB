@@ -124,7 +124,7 @@ namespace QuotesDB
                 RaisePropertyChanged("NotLoaded");
 
 
-                quoteViewer.SetDataStore(dataStore);
+                //quoteViewer.SetDataStore(dataStore);
 
                 RefreshQuote();
                 

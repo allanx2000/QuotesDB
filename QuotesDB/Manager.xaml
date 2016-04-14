@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="Manager" Height="344.048" Width="655.952">
+        Title="Quotes Manager" Height="344.048" Width="655.952">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -47,7 +47,6 @@
 
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="90"/>
-                            <ColumnDefinition Width="90"/>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
@@ -56,16 +55,11 @@
                         </Label>
 
                         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal">
-                            <Label FontWeight="Bold">Rating:</Label>
-                            <Label Content="{Binding Rating}"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
                             <Label FontWeight="Bold">Displayed:</Label>
                             <Label Content="{Binding Displayed}"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal">
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
                             <Label FontWeight="Bold">Tags:</Label>
                             <Label Content="{Binding TagsText}"/>
                         </StackPanel>

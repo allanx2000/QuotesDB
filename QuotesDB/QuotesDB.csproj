@@ -63,12 +63,16 @@
     <Compile Include="PopupSettings.xaml.cs">
       <DependentUpon>PopupSettings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TagsEditorViewModel.cs" />
     <Compile Include="QuoteService.cs" />
     <Compile Include="QuotesPopupWindow.xaml.cs">
       <DependentUpon>QuotesPopupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="QuoteViewer.xaml.cs">
       <DependentUpon>QuoteViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TagsEditor.xaml.cs">
+      <DependentUpon>TagsEditor.xaml</DependentUpon>
     </Compile>
     <Page Include="EditQuoteWindow.xaml">
       <SubType>Designer</SubType>
@@ -117,6 +121,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="QuoteViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TagsEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -188,6 +196,7 @@
     <Content Include="TableScripts\quotes.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="ToDo.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

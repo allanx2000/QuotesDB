@@ -1,0 +1,52 @@
+﻿<Window x:Class="QuotesDB.TagsEditor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuotesDB"
+        mc:Ignorable="d"
+        Title="TagsEditor" Height="500" Width="600">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel LastChildFill="True">
+                <Label DockPanel.Dock="Left">New Tag: </Label>
+                <Button Command="{Binding AddNewToCurrentCommand}" DockPanel.Dock="Right">Add</Button>
+                <TextBox Text="{Binding NewTagName}"/>
+            </DockPanel>
+
+            <GroupBox Grid.Row="1" Header="Existing Tags">
+                <DockPanel LastChildFill="True">
+                    <Button Command="{Binding AddExistingToCurrentCommand}" DockPanel.Dock="Bottom">Add</Button>
+                    <ListBox ItemsSource="{Binding AllTagsView}" DisplayMemberPath="TagName" SelectedItem="{Binding SelectedExisting}" />
+                </DockPanel>    
+            </GroupBox>            
+        </Grid>
+
+        <GroupBox Grid.Column="1" Header="Current Tags">
+            <DockPanel LastChildFill="True">
+                <Button DockPanel.Dock="Bottom" Command="{Binding RemoveFromCurrentCommand}">Remove</Button>
+                <ListBox ItemsSource="{Binding CurrentListView}" DisplayMemberPath="TagName" SelectedItem="{Binding SelectedCurrent}"/>
+            </DockPanel>
+        </GroupBox>
+
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button Command="{Binding OKCommand}">OK</Button>
+            <Button Command="{Binding CancelCommand}">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

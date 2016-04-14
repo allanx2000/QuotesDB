@@ -11,12 +11,12 @@ namespace QuotesDB.DAO
         Author GetAuthor(int id);
         void DeleteAuthor(Author author);
 
-
+        List<Quote> GetQuotes(Tag tag);
         List<Quote> GetQuotes(Author author);
         Quote GetRandomQuote();
         Quote InsertQuote(Quote quote);
         void UpdateQuote(Quote quote);
-        void UpdateQuoteRating(Quote quote);
+        //void UpdateQuoteRating(Quote quote);
         void UpdateQuoteCount(Quote quote);
         void DeleteQuote(Quote selectedQuote);
         int GetTotalQuotes();
@@ -33,7 +33,7 @@ namespace QuotesDB.DAO
         void Import(Bundle data);
 
         void ClearTables();
-        
+        void UpdateTags(Quote qt, List<Tag> tagsList);
     }
 
 }

@@ -1,0 +1,3 @@
+﻿-Lookup implementation for Tags in Manager 
+-Change to use DataStore in QuoteService
+-Remove Ratings (change db create, insert, update)

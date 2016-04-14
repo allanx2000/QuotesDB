@@ -11,27 +11,93 @@ namespace QuotesDB
 {
     public class EditQuoteViewModel : ViewModel
     {
-        private IQuoteStore ds;
+        private readonly IQuoteStore ds = QuoteService.Instance.DataStore;
+
         private Quote existingQuote;
         private Window window;
+        
 
-        public EditQuoteViewModel(IQuoteStore ds, Window window)
+        public EditQuoteViewModel(Window window)
         {
-            this.ds = ds;
             this.window = window;
         }
+
+        public string Author { get; set; }
+        public string Quote { get; set; }
+
+        public string Tags
+        {
+            get
+            {
+                return string.Join(", ", from t in TagsList select t.TagName);
+            }
+            
+        }
+
+        private List<Tag> TagsList = new List<Tag>();
+        private bool TagsChanged = false;
+
+        //public int Rating { get; set; }
+        public int Displayed { get; set; }
+
+        public List<Author> Authors
+        {
+            get { return ds.GetAuthors(); }
+        }
+
 
         public void SetQuote(Quote quote)
         {
             this.existingQuote = quote;
 
             Quote = quote.Text;
-            Rating = quote.Rating;
+            //Rating = quote.Rating;
             Author = quote.Author.Name;
             Displayed = quote.Displayed;
 
-            List<Tag> tags = ds.GetTagsForQuote(quote);
-            Tags = string.Join(", ", (from t in tags select t.TagName));
+            TagsList = ds.GetTagsForQuote(quote);
+            
+        }
+
+        public ICommand EditTagsCommand
+        {
+            get
+            {
+                return new CommandHelper(EditTags);
+            }
+        }
+
+        private void EditTags()
+        {
+            TagsEditor editor = new TagsEditor(TagsList);
+            editor.ShowDialog();
+
+            if (!editor.Cancelled)
+            {
+                TagsList = editor.GetTags();
+                TagsChanged = true;
+                RaisePropertyChanged("Tags");
+            }
+        }
+
+        public ICommand ResetCountCommand
+        {
+            get
+            {
+                return new CommandHelper(ResetCount);
+            }
+        }
+
+        private void ResetCount()
+        {
+            if (existingQuote == null)
+                return;
+
+            existingQuote.Displayed = 0;
+            ds.UpdateQuote(existingQuote);
+
+            Displayed = 0;
+            RaisePropertyChanged("Displayed");
         }
 
         public ICommand CloseCommand
@@ -68,7 +134,7 @@ namespace QuotesDB
                     qt.Author = author;
 
                 qt.Text = Quote;
-                qt.Rating = Rating;
+                //qt.Rating = Rating;
 
                 if (!isUpdate)
                 {
@@ -78,11 +144,9 @@ namespace QuotesDB
                     ds.UpdateQuote(qt);
 
                 //Tags
-                if (!string.IsNullOrEmpty(Tags))
-                {
-                    var tags = from i in Tags.Split(',') select i.Trim();
-                    ds.UpdateTags(qt, tags);
-                }
+                if (TagsChanged)
+                    ds.UpdateTags(qt, TagsList);
+                
 
                 window.Close();
             }
@@ -93,16 +157,6 @@ namespace QuotesDB
         }
 
 
-        public List<Author> Authors
-        {
-            get { return ds.GetAuthors(); }
-        }
-
-        public string Author { get; set; }
-        public string Quote { get; set; }
-        public string Tags { get; set; }
-
-        public int Rating { get; set; }
-        public int Displayed { get; set; }
+        
     }
 }

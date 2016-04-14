@@ -184,6 +184,8 @@ namespace QuotesDB.DAO
             if (!String.IsNullOrEmpty(search))
                 sql += String.Format(" WHERE Name LIKE '%{0}%'", search);
 
+            sql += " ORDER BY Name ASC";
+
             var data = this.ExecuteSelect(sql);
 
             List<Author> authors = new List<Author>();
@@ -204,6 +206,16 @@ namespace QuotesDB.DAO
         #endregion
 
         #region Quotes
+        
+        public List<Quote> GetQuotes(Tag tag)
+        {
+            string sql = "SELECT q.* FROM {0} q JOIN {1} tm ON q.ID = tm.QuoteId WHERE tm.TagId={2}";
+            sql = String.Format(sql, QuotesTable, TagMapTable, tag.ID);
+
+            return ParseQuotes(ExecuteSelect(sql));
+        }
+
+
         public List<Quote> GetQuotes(Author author)
         {
             string sql = "SELECT * FROM " + QuotesTable + " WHERE AuthorId=" + author.ID;
@@ -228,7 +240,7 @@ namespace QuotesDB.DAO
                 {
                     ID = Convert.ToInt32(row["ID"]),
                     Displayed = Convert.ToInt32(row["Count"]),
-                    Rating = Convert.ToInt32(row["Rating"]), 
+                    //Rating = Convert.ToInt32(row["Rating"]), 
                     Text = row["Text"].ToString()
                 };
 
@@ -252,7 +264,7 @@ namespace QuotesDB.DAO
                 quote.Author.ID, 
                  SQLUtils.SQLEncode(quote.Text), 
                  quote.Displayed, 
-                 quote.Rating);
+                 0); //TODO: Remove column
 
             ExecuteNonQuery(sql);
             
@@ -283,11 +295,26 @@ namespace QuotesDB.DAO
             */
         }
 
-        private static Random random;
+        private static Random random = new Random(DateTime.Now.Millisecond);
+        private int? min, max;
+
+        private void ResetQuotesRange()
+        {
+            string sql = "SELECT MIN(ID) FROM " + QuotesTable;
+            min = Convert.ToInt32(ExecuteScalar(sql));
+
+            sql = "SELECT MAX(ID) FROM " + QuotesTable;
+            max = Convert.ToInt32(ExecuteScalar(sql));
+
+            max += 1; //Exclusive
+        }
+
         public Quote GetRandomQuote()
         {
-            if (random == null)
-                 random = new Random(DateTime.Now.Millisecond);
+            if (min == null || max == null)
+            {
+                ResetQuotesRange();    
+            }
 
             int count = GetTotalQuotes();
             if (count == 0)
@@ -295,9 +322,10 @@ namespace QuotesDB.DAO
 
             Quote quote = null;
 
+
             while (quote == null)
             {
-                int id = random.Next(1, count);
+                int id = random.Next(min.Value, max.Value);
                 quote = GetQuote(id);
             }
 
@@ -322,16 +350,18 @@ namespace QuotesDB.DAO
             ExecuteNonQuery(sql);
         }
 
+        /*
         public void UpdateQuoteRating(Quote quote)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("UPDATE " + QuotesTable);
-            sb.AppendLine("SET Rating = " + quote.Rating);
+            sb.AppendLine("SET Rating = 0" + quote.Rating);
             sb.AppendLine("WHERE ID = " + quote.ID);
 
             string sql = sb.ToString();
             ExecuteNonQuery(sql);
         }
+        */
 
         public void UpdateQuote(Quote quote)
         {
@@ -342,7 +372,7 @@ namespace QuotesDB.DAO
             parts.Add("AuthorId = " + quote.Author.ID);
             parts.Add("Text = '" + SQLUtils.SQLEncode(quote.Text) + "'");
             parts.Add("Count = " + quote.Displayed);
-            parts.Add("Rating = " + quote.Rating);
+            //parts.Add("Rating = " + quote.Rating);
             sb.AppendLine("SET " + String.Join(", ", parts));
 
             sb.AppendLine("WHERE ID = " + quote.ID);
@@ -382,6 +412,8 @@ namespace QuotesDB.DAO
             if (!String.IsNullOrEmpty(search))
                 sql += String.Format(" WHERE Tag LIKE '%{0}%'", search);
 
+            sql += " ORDER BY Tag ASC";
+
             var data = this.ExecuteSelect(sql);
             List<Tag> tags = ParseTags(data);
 
@@ -409,11 +441,29 @@ namespace QuotesDB.DAO
         {
             int id = quote.ID;
 
-            string sql = "SELECT t.ID, t.Tag FROM {0} t JOIN {1} m ON t.ID = m.TagId WHERE m.QuoteId={2}";
+            string sql = "SELECT t.ID, t.Tag FROM {0} t JOIN {1} m ON t.ID = m.TagId WHERE m.QuoteId={2} ORDER BY t.Tag ASC";
             sql = String.Format(sql, TagsTable, TagMapTable, id);
 
             var data = ExecuteSelect(sql);
             return ParseTags(data);
+        }
+
+        public void UpdateTags(Quote qt, List<Tag> tags)
+        {
+            string sql = "DELETE FROM {0} WHERE QuoteId={1}";
+            sql = String.Format(sql, TagMapTable, qt.ID);
+            ExecuteNonQuery(sql);
+
+            var newTags = tags.Where(x => x.ID == 0);
+            foreach (Tag t in newTags)
+            {
+                Tag tag = InsertTag(t);
+            }
+
+            foreach (Tag t in tags)
+            {
+                InsertTagMap(qt.ID, t.ID);
+            }
         }
 
         public void UpdateTags(Quote qt, IEnumerable<string> tags)
@@ -553,6 +603,7 @@ namespace QuotesDB.DAO
             ExecuteNonQuery(baseSQL + TagsTable);
         }
 
+        
 
         #endregion
 

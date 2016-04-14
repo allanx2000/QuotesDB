@@ -35,34 +35,75 @@ namespace QuotesDB
                 foreach (var q in quotes)
                     QuotesList.Add(q);
             }
+            else if (selectedListItem is Tag)
+            {
+                var quotes = dataStore.GetQuotes((Tag)selectedListItem);
+                foreach (var q in quotes)
+                    QuotesList.Add(q);
+            }
+            else
+                return;
+                //throw new NotImplementedException("Not implemented for: " + selectedListItem.GetType().Name);
 
             RaisePropertyChanged("QuotesList");
         }
 
         private void RefreshList()
         {
+            int id = 0;
+
+            if (SelectedListItem != null)
+            {
+                var author = SelectedListItem as Author;
+                if (author != null)
+                {
+                    id = author.ID;
+                }
+                else
+                {
+                    var tag = SelectedListItem as Tag;
+                    if (tag != null)
+                    {
+                        id = tag.ID;
+                    }
+                }
+            }
+            
             switch (selectedList)
             {
                 case Author:
-                    var authors = dataStore.GetAuthors().OrderBy(x => x.Name);
-
+                    
+                    var authors = dataStore.GetAuthors(); //.OrderBy(x => x.Name);
+                    
                     ListItems.Clear();
                     foreach (var a in authors)
                         ListItems.Add(a);
 
                     ListPath = "Name";
-
+                    
+                    if (id != 0)
+                    {
+                        var author = ListItems.FirstOrDefault(x => ((Author)x).ID == id);
+                        SelectedListItem = author;
+                    }
                     break;
                 case Tag:
-                    var tags = dataStore.GetTags().OrderBy(x => x.TagName);
+                    var tags = dataStore.GetTags(); 
 
                     ListItems.Clear();
                     foreach (var t in tags)
                         ListItems.Add(t);
 
                     ListPath = "TagName";
+
+                    if (id != 0)
+                    {
+                        var tag = ListItems.FirstOrDefault(x => ((Tag)x).ID == id);
+                        SelectedListItem = tag;
+                    }
                     break;
             }
+
         }
 
         #region Author/Tags List
@@ -162,10 +203,12 @@ namespace QuotesDB
 
         private void AddQuote()
         {
-            EditQuoteWindow edit = new EditQuoteWindow(dataStore);
+            EditQuoteWindow edit = new EditQuoteWindow();
             edit.ShowDialog();
 
-            LoadItem();
+            RefreshList();
+            
+            //LoadItem();
         }
 
         public ICommand EditQuoteCommand
@@ -181,7 +224,7 @@ namespace QuotesDB
             if (SelectedQuote == null)
                 return;
 
-            EditQuoteWindow edit = new EditQuoteWindow(dataStore, SelectedQuote);
+            EditQuoteWindow edit = new EditQuoteWindow(SelectedQuote);
             edit.ShowDialog();
 
             LoadItem();
