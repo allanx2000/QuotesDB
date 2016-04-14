@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="TagsEditor" Height="500" Width="600">
+        Title="Edit Tags" Height="500" Width="600">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -32,7 +32,9 @@
             <GroupBox Grid.Row="1" Header="Existing Tags">
                 <DockPanel LastChildFill="True">
                     <Button Command="{Binding AddExistingToCurrentCommand}" DockPanel.Dock="Bottom">Add</Button>
-                    <ListBox ItemsSource="{Binding AllTagsView}" DisplayMemberPath="TagName" SelectedItem="{Binding SelectedExisting}" />
+                    <ListBox ItemsSource="{Binding AllTagsView}" DisplayMemberPath="TagName" SelectedItem="{Binding SelectedExisting}" MouseDoubleClick="AllTagsListBox_MouseDoubleClick">
+                        
+                    </ListBox>
                 </DockPanel>    
             </GroupBox>            
         </Grid>
@@ -40,7 +42,7 @@
         <GroupBox Grid.Column="1" Header="Current Tags">
             <DockPanel LastChildFill="True">
                 <Button DockPanel.Dock="Bottom" Command="{Binding RemoveFromCurrentCommand}">Remove</Button>
-                <ListBox ItemsSource="{Binding CurrentListView}" DisplayMemberPath="TagName" SelectedItem="{Binding SelectedCurrent}"/>
+                <ListBox ItemsSource="{Binding CurrentListView}" DisplayMemberPath="TagName" MouseDoubleClick="CurrentListBox_MouseDoubleClick" SelectedItem="{Binding SelectedCurrent}"/>
             </DockPanel>
         </GroupBox>
 

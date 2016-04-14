@@ -42,5 +42,15 @@ namespace QuotesDB
         {
             return vm.CurrentList.ToList();
         }
+
+        private void AllTagsListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            vm.AddExistingToCurrentCommand.Execute(null);
+        }
+
+        private void CurrentListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            vm.RemoveFromCurrentCommand.Execute(null);
+        }
     }
 }
