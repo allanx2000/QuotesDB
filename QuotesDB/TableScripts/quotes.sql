@@ -3,7 +3,6 @@
   AuthorId  integer NOT NULL,
   "Text"    varchar(200) NOT NULL,
   "Count"   integer NOT NULL,
-  Rating    integer NOT NULL,
   CONSTRAINT fk_author
     FOREIGN KEY (AuthorId)
     REFERENCES tbl_authors(ID)

@@ -50,16 +50,6 @@ namespace QuotesDB.DAO
         private void CreateTagsTable()
         {
 
-            /*
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("CREATE TABLE " + TagsTable + " (");
-            sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
-            sb.AppendLine("Tag varchar(50) NOT NULL");
-            sb.AppendLine(");");
-            
-            string cmd = sb.ToString();
-            */
-
             string cmd = LoadFromFile("tags.sql");
             this.ExecuteNonQuery(cmd);
             
@@ -67,19 +57,6 @@ namespace QuotesDB.DAO
 
         private void CreateQuotesTable()
         {
-            /*
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("CREATE TABLE " + QuotesTable + " (");
-            sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
-            sb.AppendLine("AuthorId integer NOT NULL,");
-            sb.AppendLine("Text varchar(200) NOT NULL,");
-            sb.AppendLine("Count integer NOT NULL,");
-            sb.AppendLine("Rating integer NOT NULL");
-            sb.AppendLine(");");
-
-            string cmd = sb.ToString();
-            */
-
             string cmd = LoadFromFile("quotes.sql");
             this.ExecuteNonQuery(cmd);
             
@@ -87,17 +64,7 @@ namespace QuotesDB.DAO
 
         private void CreateTagMapTable()
         {
-            /*
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("CREATE TABLE " + TagMapTable + " (");
-            sb.AppendLine("TagId integer NOT NULL,");
-            sb.AppendLine("QuoteId integer NOT NULL,");
-            sb.AppendLine("PRIMARY KEY (TagId, QuoteId)");
-            sb.AppendLine(");");
-
-            string cmd = sb.ToString();
-            */
-
+         
             string cmd = LoadFromFile("tagmap.sql");
             this.ExecuteNonQuery(cmd);
 
@@ -105,17 +72,7 @@ namespace QuotesDB.DAO
 
         private void CreateAuthorsTable()
         {
-            /*
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("CREATE TABLE " + AuthorsTable + " (");
-            sb.AppendLine("ID integer NOT NULL PRIMARY KEY AUTOINCREMENT,");
-            sb.AppendLine("Name  varchar(50) NOT NULL");
-            sb.AppendLine(");");
-
-            string cmd = sb.ToString();
-            this.ExecuteNonQuery(cmd);
-            */
-
+         
             string cmd = LoadFromFile("authors.sql");
             this.ExecuteNonQuery(cmd);
         }
@@ -139,9 +96,8 @@ namespace QuotesDB.DAO
             sql = string.Format(sql, AuthorsTable, author.ID);
 
             ExecuteNonQuery(sql);
-            
-            
         }
+
         public Author CreateAuthor(Author author)
         {
             string sql = "INSERT INTO {0} VALUES({1},'{2}')";
@@ -165,6 +121,9 @@ namespace QuotesDB.DAO
             string sql = "SELECT * FROM {0} WHERE ID = {1}";
             sql = String.Format(sql, AuthorsTable, id);
             var data = this.ExecuteSelect(sql);
+
+            if (data.Rows.Count == 0)
+                return null;
 
             var row = data.Rows[0];
 
@@ -236,19 +195,25 @@ namespace QuotesDB.DAO
 
             foreach (DataRow row in data.Rows)
             {
-                var q = new Quote()
+                try
                 {
-                    ID = Convert.ToInt32(row["ID"]),
-                    Displayed = Convert.ToInt32(row["Count"]),
-                    //Rating = Convert.ToInt32(row["Rating"]), 
-                    Text = row["Text"].ToString()
-                };
+                    var q = new Quote()
+                    {
+                        ID = Convert.ToInt32(row["ID"]),
+                        Displayed = Convert.ToInt32(row["Count"]),
+                        Text = row["Text"].ToString()
+                    };
 
-                Author author = GetAuthor(Convert.ToInt32(row["AuthorID"]));
-                q.Author = author;
-                q.Tags = GetTagsForQuote(q);
+                    Author author = GetAuthor(Convert.ToInt32(row["AuthorID"]));
+                    q.Author = author;
+                    q.Tags = GetTagsForQuote(q);
 
-                quotes.Add(q);
+                    quotes.Add(q);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
 
             return quotes;
@@ -258,13 +223,12 @@ namespace QuotesDB.DAO
         {
             //TODO: Add insert Author, Tag?
 
-            string sql = "INSERT INTO {0} VALUES({1},{2},'{3}',{4},{5})";
+            string sql = "INSERT INTO {0} VALUES({1},{2},'{3}',{4})";
             sql = String.Format(sql, QuotesTable, 
                 "NULL",
                 quote.Author.ID, 
                  SQLUtils.SQLEncode(quote.Text), 
-                 quote.Displayed, 
-                 0); //TODO: Remove column
+                 quote.Displayed); 
 
             ExecuteNonQuery(sql);
             
@@ -286,13 +250,7 @@ namespace QuotesDB.DAO
             string sql = "DELETE FROM {0} WHERE ID = {1}";
             sql = String.Format(sql, QuotesTable, quote.ID);
             ExecuteNonQuery(sql);
-
-            /*
-            //TODO: Create Foreign key mapping
-            sql = "DELETE FROM {0} WHERE QuoteID = {1}";
-            sql = String.Format(sql, TagMapTable, quote.ID);
-            ExecuteNonQuery(sql);
-            */
+            
         }
 
         private static Random random = new Random(DateTime.Now.Millisecond);
@@ -311,15 +269,16 @@ namespace QuotesDB.DAO
 
         public Quote GetRandomQuote()
         {
+            int count = GetTotalQuotes();
+            if (count == 0)
+                return null;
+
             if (min == null || max == null)
             {
                 ResetQuotesRange();    
             }
 
-            int count = GetTotalQuotes();
-            if (count == 0)
-                return null;
-
+            
             Quote quote = null;
 
 
@@ -349,20 +308,7 @@ namespace QuotesDB.DAO
             string sql = sb.ToString();
             ExecuteNonQuery(sql);
         }
-
-        /*
-        public void UpdateQuoteRating(Quote quote)
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("UPDATE " + QuotesTable);
-            sb.AppendLine("SET Rating = 0" + quote.Rating);
-            sb.AppendLine("WHERE ID = " + quote.ID);
-
-            string sql = sb.ToString();
-            ExecuteNonQuery(sql);
-        }
-        */
-
+        
         public void UpdateQuote(Quote quote)
         {
             StringBuilder sb = new StringBuilder();
@@ -372,7 +318,6 @@ namespace QuotesDB.DAO
             parts.Add("AuthorId = " + quote.Author.ID);
             parts.Add("Text = '" + SQLUtils.SQLEncode(quote.Text) + "'");
             parts.Add("Count = " + quote.Displayed);
-            //parts.Add("Rating = " + quote.Rating);
             sb.AppendLine("SET " + String.Join(", ", parts));
 
             sb.AppendLine("WHERE ID = " + quote.ID);
@@ -537,11 +482,13 @@ namespace QuotesDB.DAO
             Bundle bundle = new Bundle();
             bundle.Quotes = GetQuotes();
             
+            /*
             foreach (Quote q in bundle.Quotes)
             {
                 var tags = GetTagsForQuote(q);
                 q.Tags = tags;
             }
+            */
 
             return bundle;
         }

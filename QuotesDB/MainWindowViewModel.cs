@@ -122,10 +122,7 @@ namespace QuotesDB
 
                 RaisePropertyChanged("Loaded");
                 RaisePropertyChanged("NotLoaded");
-
-
-                //quoteViewer.SetDataStore(dataStore);
-
+                
                 RefreshQuote();
                 
                 QuoteService.Instance.StartTimer();
