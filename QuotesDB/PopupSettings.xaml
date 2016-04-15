@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:QuotesDB"
         xmlns:toolkit="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Popup Settings" Height="300" Width="300">
+        Title="Popup Settings" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>

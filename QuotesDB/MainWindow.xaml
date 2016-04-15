@@ -38,7 +38,12 @@
             </DockPanel>
         </GroupBox>
 
-        <StackPanel Grid.Row="3" IsEnabled="{Binding Loaded}" Width="200">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="3" IsEnabled="{Binding Loaded}">
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Width" Value="105"/>
+                </Style>
+            </StackPanel.Resources>
             <Button Command="{Binding OpenQuotesManagerCommand}">Quotes Manager</Button>
             <Button Command="{Binding OpenPopupSettingsCommand}">Popup Settings</Button>
             <Button Command="{Binding ExportImportCommand}">Export/Import</Button>
