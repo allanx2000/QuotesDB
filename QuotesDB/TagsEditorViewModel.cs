@@ -119,7 +119,7 @@ namespace QuotesDB
             }
         }
 
-        public void AddExistingToCurrent()
+        private void AddExistingToCurrent()
         {
             if (SelectedExisting == null)
                 return;
@@ -137,7 +137,7 @@ namespace QuotesDB
             }
         }
 
-        public void AddNewToCurrent()
+        private void AddNewToCurrent()
         {
             try
             {

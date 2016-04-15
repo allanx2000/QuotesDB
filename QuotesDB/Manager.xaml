@@ -30,7 +30,8 @@
                  DisplayMemberPath="{Binding ListPath}"
                  SelectedItem="{Binding SelectedListItem}"/>
 
-        <StackPanel Grid.Row="2">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Command="{Binding EditListItemCommand}">Edit</Button>
             <Button Command="{Binding DeleteFromListCommand}">Delete</Button>
         </StackPanel>
 

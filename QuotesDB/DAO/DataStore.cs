@@ -18,7 +18,12 @@ namespace QuotesDB.DAO
         private const string QuotesTable = "tbl_quotes";
         private const string TagMapTable = "tbl_tag_map";
 
-        public DataStore(string filename, bool isNew) : base(filename, isNew)
+        private static readonly Dictionary<string, string> options = new Dictionary<string, string>()
+        {
+            { "foreign keys" , "true" }
+        };
+
+        public DataStore(string filename, bool isNew) : base(filename, isNew, options)
         {
             if (isNew)
             {
@@ -113,7 +118,10 @@ namespace QuotesDB.DAO
 
         public void UpdateAuthor(Author author)
         {
-            throw new NotImplementedException();
+            string sql = "UPDATE {0} SET Name = '{1}' WHERE ID = {2}";
+            sql = string.Format(sql, AuthorsTable, SQLUtils.SQLEncode(author.Name), author.ID);
+
+            ExecuteNonQuery(sql);
         }
 
         public Author GetAuthor(int id)
@@ -347,7 +355,9 @@ namespace QuotesDB.DAO
 
         public void UpdateTag(Tag tag)
         {
-            throw new NotImplementedException();
+            string sql = "UPDATE {0} SET Tag = '{1}' WHERE ID = {2}";
+            sql = string.Format(sql, TagsTable, tag.TagName, tag.ID);
+            ExecuteNonQuery(sql);
         }
 
         public List<Tag> GetTags(string search = null)

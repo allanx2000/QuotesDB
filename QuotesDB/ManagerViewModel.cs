@@ -108,8 +108,12 @@ namespace QuotesDB
 
         #region Author/Tags List
 
-        //DisplayMemberPath for the Authors/Tags List
+           
         private string listPath;
+
+        /// <summary>
+        /// DisplayMemberPath for the Authors/Tags List
+        /// </summary>
         public string ListPath
         {
             get { return listPath; }
@@ -131,8 +135,11 @@ namespace QuotesDB
             }
         }
 
-        //SelectedItem For the Author/Tags List
         private object selectedListItem;
+
+        /// <summary>
+        /// SelectedItem For the Author/Tags List
+        /// </summary>
         public object SelectedListItem
         {
             get
@@ -147,8 +154,11 @@ namespace QuotesDB
             }
         }
 
-        //Selected Item from the Tags/Author ComboBox
         private string selectedList;
+
+        /// <summary>
+        /// Selected Item from the Tags/Author ComboBox
+        /// </summary>
         public string SelectedList
         {
             get
@@ -168,6 +178,76 @@ namespace QuotesDB
         {
             get; set;
         }
+
+        #region Commands
+        
+        public ICommand EditListItemCommand
+        {
+            get
+            {
+                return new CommandHelper(EditListItem);
+            }
+        }
+
+        private void EditListItem()
+        {
+            if (SelectedListItem != null)
+            {
+                EditAuthorTagWindow window = new EditAuthorTagWindow(SelectedListItem);
+                window.ShowDialog();
+
+                RefreshList();
+            }
+        }
+
+        public ICommand DeleteFromListCommand
+        {
+            get
+            {
+                return new CommandHelper(DeleteFromList);
+            }
+
+        }
+
+        private void DeleteFromList()
+        {
+            try
+            {
+                switch (SelectedList)
+                {
+                    case Author:
+                        Author author = SelectedListItem as Author;
+                        if (author != null && MessageBoxFactory.ShowConfirmAsBool("Delete author: " + author.Name, "Delete Author"))
+                        {
+                            dataStore.DeleteAuthor(author);
+                        }
+                        break;
+                    case Tag:
+                        Tag tag = selectedListItem as Tag;
+
+                        if (tag != null)
+                        {
+                            int count = dataStore.GetQuotesCount(tag);
+                            if (MessageBoxFactory.ShowConfirmAsBool(String.Format("{0} has {1} quotes associated with it. Continue delete?", tag.TagName, count),
+                                "Delete Tag"))
+                            {
+                                dataStore.DeleteTag(tag);
+                            }
+                        }
+                        break;
+                }
+
+                RefreshList();
+            }
+            catch (Exception e)
+            {
+                MessageBoxFactory.ShowError(e);
+            }
+
+        }
+
+
+        #endregion
 
         #endregion
 
@@ -230,54 +310,6 @@ namespace QuotesDB
             LoadItem();
         }
 
-
-        public ICommand DeleteFromListCommand
-        {
-            get
-            {
-                return new CommandHelper(DeleteFromList);
-            }
-
-        }
-
-        private void DeleteFromList()
-        {
-            try
-            {
-                switch (SelectedList)
-                {
-                    case Author:
-                        Author author = SelectedListItem as Author;
-                        if (author != null && MessageBoxFactory.ShowConfirmAsBool("Delete author: " + author.Name, "Delete Author"))
-                        {
-                            dataStore.DeleteAuthor(author);
-                        }
-                        break;
-                    case Tag:
-                        Tag tag = selectedListItem as Tag;
-
-                        if (tag != null)
-                        {
-                            int count = dataStore.GetQuotesCount(tag);
-                            if (MessageBoxFactory.ShowConfirmAsBool(String.Format("{0} has {1} quotes associated with it. Continue delete?", tag.TagName , count), 
-                                "Delete Tag"))
-                            {
-                                dataStore.DeleteTag(tag);
-                            }
-                        }
-                        break;
-                }
-
-                RefreshList();
-            }
-            catch (Exception e)
-            {
-                MessageBoxFactory.ShowError(e);
-            }
-
-
-        }
-
         #endregion
 
         public ObservableCollection<Quote> QuotesList { get; private set; }
@@ -295,8 +327,7 @@ namespace QuotesDB
                 RaisePropertyChanged();
             }
         }
-
-
+        
         #endregion
 
     }

@@ -60,6 +60,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="EditAuthorTagViewModel.cs" />
+    <Compile Include="EditAuthorTagWindow.xaml.cs">
+      <DependentUpon>EditAuthorTagWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="PopupSettings.xaml.cs">
       <DependentUpon>PopupSettings.xaml</DependentUpon>
     </Compile>
@@ -74,6 +78,10 @@
     <Compile Include="TagsEditor.xaml.cs">
       <DependentUpon>TagsEditor.xaml</DependentUpon>
     </Compile>
+    <Page Include="EditAuthorTagWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EditQuoteWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

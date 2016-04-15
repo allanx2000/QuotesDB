@@ -1,3 +1,1 @@
 ﻿-Change to use DataStore in QuoteService
--Remove Ratings (change db create, insert, update)
--Update Author, Tag
