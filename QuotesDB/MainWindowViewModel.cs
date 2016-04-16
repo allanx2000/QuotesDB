@@ -23,12 +23,20 @@ namespace QuotesDB
                 RaisePropertyChanged();
             }
         }
-
+        
         public bool Loaded
         {
             get
             {
                 return dataStore != null;
+            }
+        }
+
+        public string LoadButtonText
+        {
+            get
+            {
+                return Loaded ? "Change" : "Load";
             }
         }
 
@@ -42,7 +50,28 @@ namespace QuotesDB
 
         public ICommand LoadCommand
         {
-            get { return new CommandHelper(LoadDatabase); }
+            get { return new CommandHelper(ToggleLoad); }
+        }
+
+        private void ToggleLoad()
+        {
+            if (!Loaded)
+                LoadDatabase();
+            else
+                Unload();
+
+            RaisePropertyChanged("LoadButtonText");
+        }
+
+        private void Unload()
+        {
+            QuoteService.Instance.UnloadDatabase();
+            dataStore = null;
+
+            quoteViewer.SetQuote(null);
+
+            RaisePropertyChanged("NotLoaded");
+            RaisePropertyChanged("Loaded");
         }
 
         public ICommand BrowseCommand
@@ -138,6 +167,11 @@ namespace QuotesDB
             this.window = window;
             this.quoteViewer = quoteViewer;
 
+            if (DatabasePath != null)
+            {
+                if (File.Exists(DatabasePath))
+                    ToggleLoad();
+            }
         }
 
         private void RefreshQuote()

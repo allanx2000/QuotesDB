@@ -64,11 +64,18 @@ namespace QuotesDB
             });
         }
 
+        public void UnloadDatabase()
+        {
+            StopTimer();
+            dataStore = null;
+        }
+
         public void StopTimer()
         {
             if (popupTimer == null)
                 return;
-            
+
+            popupTimer.Change(Timeout.Infinite, Timeout.Infinite);
             popupTimer.Dispose();
             popupTimer = null;
         }

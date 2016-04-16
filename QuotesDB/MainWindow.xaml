@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QuotesDB"
         mc:Ignorable="d"
-        Title="QuotesDB" Height="500" Width="600">
+        Title="QuotesDB" Height="400" Width="600">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -25,7 +25,7 @@
             <Label Grid.Column="0">Database:</Label>
             <TextBox IsEnabled="{Binding NotLoaded}" Grid.Column="1" Text="{Binding DatabasePath}"/>
             <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="2" Command="{Binding BrowseCommand}">...</Button>
-            <Button  IsEnabled="{Binding NotLoaded}" Grid.Column="3" Command="{Binding LoadCommand}">Load</Button>
+            <Button  Grid.Column="3" Command="{Binding LoadCommand}" Width="70" Content="{Binding LoadButtonText, FallbackValue=Load}"/>
         </Grid>
         
         <GroupBox Grid.Row="2" Header="Random Quote" IsEnabled="{Binding Loaded}">

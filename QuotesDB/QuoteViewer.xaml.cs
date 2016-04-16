@@ -147,13 +147,13 @@ namespace QuotesDB
 
         public void SetQuote(Quote quote)
         {
-            if (quote == null)
-                return;
-
             this.quote = quote;
 
-            quote.Displayed += 1;
-            DataStore.UpdateQuoteCount(quote);
+            if (quote != null)
+            {
+                quote.Displayed += 1;
+                DataStore.UpdateQuoteCount(quote);
+            }
 
             RaisePropertyChanged("Quote");
             RaisePropertyChanged("Author");
